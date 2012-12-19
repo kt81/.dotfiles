@@ -1,6 +1,15 @@
-initialize-env
-==============
+.config
+=======
 
 環境構築用。zshrcはマイナビニュースの『漢のzsh』から頂戴したのほぼまんま
 
-ホームディレクトリ直下の.configディレクトリにcloneすることを想定
+    cd ~
+    
+    git clone https://github.com/kt81/.config.git
+    .config/setup.sh
+    
+    # chshもやってなければやる
+    chsh -s /bin/zsh
+    
+    # optional
+    vim .zshrc.mine
