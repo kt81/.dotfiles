@@ -16,6 +16,15 @@ export SVN_EDITOR=vim
 #
 PATH="$PATH":/sbin/:/usr/sbin/
 
+
+#
+# Misc settings
+#
+if test -x /usr/bin/colordiff; then
+	alias diff='colordiff'
+fi
+export LESS="-R"
+
 ## Default shell configuration
 #
 # set prompt
@@ -205,3 +214,4 @@ esac
 ## load user .zshrc configuration file
 #
 [ -f ${HOME}/.zshrc.mine ] && source ${HOME}/.zshrc.mine
+
