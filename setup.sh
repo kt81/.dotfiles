@@ -1,5 +1,5 @@
 #!/bin/sh
 # setup.
-[ ! -e ~/.zshrc ] && ln -s ~/.config/.zshrc ~/.zshrc
-[ ! -e ~/.vimrc ] && ln -s ~/.config/.vimrc ~/.vimrc
+[ ! -e ~/.zshrc ] && ln -s ~/.common_conf/.zshrc ~/.zshrc
+[ ! -e ~/.vimrc ] && ln -s ~/.common_conf/.vimrc ~/.vimrc
 touch ~/.zshrc.mine
