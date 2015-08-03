@@ -6,7 +6,7 @@
     cd ~
     
     git clone https://github.com/kt81/.config.git
-    .config/setup.sh
+    .common_conf/setup.sh
     
     # chshもやってなければやる
     chsh -s /bin/zsh

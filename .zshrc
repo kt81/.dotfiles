@@ -14,8 +14,7 @@ export SVN_EDITOR=vim
 #
 # PATH setting
 #
-PATH=/usr/local/bin:"$PATH":/sbin:/usr/sbin
-
+PATH=/usr/local/bin:"$PATH":/usr/local/sbin:/usr/sbin:/sbin
 
 #
 # Misc settings
