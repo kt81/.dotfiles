@@ -1,15 +1,14 @@
 .config
 =======
 
-環境構築用。zshrcはマイナビニュースの『漢のzsh』から頂戴したのほぼまんま
+環境構築用。
 
-    cd ~
-    
-    git clone https://github.com/kt81/.config.git
-    .common_conf/setup.sh
-    
-    # chshもやってなければやる
-    chsh -s /bin/zsh
-    
-    # optional
-    vim .zshrc.mine
+```shell
+cd ~
+
+git clone https://github.com/kt81/.common_conf.git
+.common_conf/setup.sh
+
+# chshもやってなければやる
+chsh -s /bin/zsh
+```
