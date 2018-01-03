@@ -34,6 +34,9 @@ if [ ! -e ~/.vim/dein ] ; then
     rm -f installer.sh
 fi
 
+# etc
+setopt NO_BEEP
+
 export EDITOR=vim
 export VISUAL=vim
 
