@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
 if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
-   set fileencodings=utf-8,latin1
+  set fileencodings=utf-8,latin1
 endif
 
 "dein Scripts-----------------------------
@@ -88,7 +88,7 @@ set listchars=eol:↲,trail:-,tab:»\ ,extends:$
 
 "tab indent
 set tabstop=4
-"set expandtab -- use \t !
+set expandtab
 set smarttab
 set shiftwidth=4
 set shiftround
@@ -96,7 +96,9 @@ set wrap
 
 "mouse
 set mouse=a
-set ttymouse=xterm2
+if !has('nvim')
+  set ttymouse=xterm2
+endif
 
 "powerline
 "python from powerline.vim import setup as powerline_setup
@@ -108,11 +110,15 @@ set ttymouse=xterm2
 
 set nobackup
 
+if !has('nvim')
+  set term=screen-256color
+endif
+
 "lightlineと同じ設定
 set laststatus=2
 let g:lightline = {
-	\ 'colorscheme': 'wombat'
-	\ }
+  \ 'colorscheme': 'wombat'
+  \ }
 set background=dark
 let g:hybrid_custom_term_colors = 1
 "let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
@@ -122,3 +128,5 @@ colorscheme hybrid
 " Plugin Settings
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
+" vim: ts=8 sw=2 et :
