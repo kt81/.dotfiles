@@ -110,7 +110,10 @@ endif
 
 set nobackup
 
-if !has('nvim')
+" color
+if has('nvim')
+  set termguicolors
+else
   set term=screen-256color
 endif
 
