@@ -30,27 +30,29 @@ fi
 zplug load
 
 # ----------------------------------
-# dein
-# ----------------------------------
-if [ ! -e ~/.vim/dein ] ; then
-    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
-    sh ./installer.sh .vim/dein
-    rm -f installer.sh
-fi
-
-# ----------------------------------
 # etc
 # ----------------------------------
 setopt NO_BEEP
 export EDITOR=vim
 export VISUAL=vim
+export LC_ALL='en_US.UTF-8'
 # configure XDG Base Directory
 [ ! -e ~/.config ] && mkdir ~/.config
 export XDG_CONFIG_HOME=~/.config
 # configure aliases
-which nvim > /dev/null 2>&1 && alias vim=nvim
-which htop > /dev/null 2>&1 && alias top=htop
+command -v nvim > /dev/null 2>&1 && alias vim=nvim
+command -v htop > /dev/null 2>&1 && alias top=htop
+command -v python3 > /dev/null 2>&1 && alias python=python3
+command -v pip3 > /dev/null 2>&1 && alias pip=pip3
+# anyenv
+command -v anyenv > /dev/null 2>&1 && eval "$(anyenv init -)"
 # path configuration
 if [ -e ~/.local/bin ] ; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
+if [ -e ~/.config/composer/vendor/bin ] ; then
+    export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+fi
+[ -e "$HOME/Library/Python/3.7/bin" ] && export PATH="$HOME/Library/Python/3.7/bin:$PATH"
+
+# vim: et:ts=4:sw=4
