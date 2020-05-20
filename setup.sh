@@ -27,10 +27,6 @@ esac
 # Mac
 # ----------------------------------
 
-# ----------------------------------
-# Mac
-# ----------------------------------
-
 if [ $machine = Mac ] ; then
 
     # Homebrew
@@ -55,6 +51,11 @@ if [ $machine = Mac ] ; then
 
     # powerline
     pip3 install --user powerline-status
+
+    # Screenshot behaviour
+    defaults write com.apple.screencapture type jpg
+    defaults write com.apple.screencapture disable-shadow -bool true
+    killall SystemUIServer
 fi
 
 # ----------------------------------
