@@ -53,6 +53,9 @@ fi
 if [ -e ~/.config/composer/vendor/bin ] ; then
     export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 fi
+if [ -e ~/Library/Android/sdk/platform-tools/ ] ; then
+    export PATH="$HOME/Library/Android/sdk/platform-tools/:$PATH"
+fi
 [ -e "$HOME/Library/Python/3.7/bin" ] && export PATH="$HOME/Library/Python/3.7/bin:$PATH"
 
 # vim: et:ts=4:sw=4
