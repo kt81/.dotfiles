@@ -1,14 +1,30 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# setup.
-[ ! -e ~/.zshrc ] && ln -s ~/.common_conf/.zshrc ~/.zshrc
-[ ! -e ~/.vimrc ] && ln -s ~/.common_conf/.vimrc ~/.vimrc
-[ ! -e ~/.gvimrc ] && ln -s ~/.common_conf/.gvimrc ~/.gvimrc
-[ ! -e ~/.vim ] && mkdir ~/.vim
-[ ! -e ~/.config ] && mkdir ~/.config
-[ ! -e ~/.config/nvim ] && mkdir ~/.config/nvim
-[ ! -e ~/.config/nvim/init.vim ] && ln -s ~/.vimrc ~/.config/nvim/init.vim
-[ ! -e ~/.tmux.conf ] && ln -s ~/.common_conf/.tmux.conf ~/.tmux.conf
+#
+# For Mac and Linux
+#
+
+repoRoot=$(realpath $(dirname "$0"))
+
+packagesCommon=(
+    zsh tmux neovim
+    git git-lfs tig
+    htop glances ripgrep
+    curl wget file
+)
+
+packagesMac=(
+    fd
+)
+# ubuntu
+packagesLinux=(
+    fd-find build-essential apt-transport-https
+)
+
+# Shorthand
+cex() {
+    command -v $1 >/dev/null 2>&1;
+}
 
 # ----------------------------------
 # Check Environment ($machine)
@@ -23,6 +39,7 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 
+
 # ----------------------------------
 # Mac
 # ----------------------------------
@@ -30,7 +47,7 @@ esac
 if [ $machine = Mac ] ; then
 
     # Homebrew
-    if [ ! command -v brew > /dev/null 2>&1 ] ; then
+    if [ ! cex brew ] ; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     fi
 
@@ -62,16 +79,33 @@ fi
 # Linux
 # ----------------------------------
 
-# ----------------------------------
-# dein
-# ----------------------------------
+if [ $machine = 'Linux' ] ; then
+    read -p "Are you sure to want to install packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
+    echo
+    if [[ $inst =~ ^[Yy]$ ]] ; then
+        sudo apt update
+        sudo apt install -y ${packagesCommon[@]} ${packagesLinux[@]}
 
-if [ ! -e ~/.cache/dein ] ; then
-    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > ~/dein_installer.sh
-    sh ~/dein_installer.sh ~/.cache/dein
-    rm -f ~/dein_installer.sh
+        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt update
+        sudo add-apt-repository universe
+        sudo apt install -y powershell
+        rm packages-microsoft-prod.deb
+    fi
 fi
+
+# ----------------------------------
+# Common and PowerShell)
+# ----------------------------------
+pwsh $repoRoot/setup.ps1
+
+# ----------------------------------
+# ZSH
+# ----------------------------------
+[ -e ~/.zshrc ] || cp $repoRoot/.zshrc ~/.zshrc
+[ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
 
 echo "Please restart the shell to apply all changes."
 
-# vim: et:ts=4:sw=4
+# vim: et:ts=4:sw=4:ft=bash
