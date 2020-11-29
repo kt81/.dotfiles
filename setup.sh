@@ -80,7 +80,7 @@ fi
 # ----------------------------------
 
 if [ $machine = 'Linux' ] ; then
-    read -p "Are you sure to want to install packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
+    read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
         sudo apt update
@@ -96,16 +96,30 @@ if [ $machine = 'Linux' ] ; then
 fi
 
 # ----------------------------------
-# Common and PowerShell)
+# Common over *NIX Platforms
 # ----------------------------------
-pwsh $repoRoot/setup.ps1
+if [ ! -e ~/.fzf ] ; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+fi
+
+if ! command -v asdf > /dev/null 2>&1 ; then
+    git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+    cd ~/.asdf
+    git checkout "$(git describe --abbrev=0 --tags)"
+fi
+
+# ----------------------------------
+# Common and PowerShell
+# ----------------------------------
+command -v pwsh > /dev/null 2>&1  && pwsh $repoRoot/setup.ps1
 
 # ----------------------------------
 # ZSH
 # ----------------------------------
-[ -e ~/.zshrc ] || cp $repoRoot/.zshrc ~/.zshrc
+[ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
 [ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
 
-echo "Please restart the shell to apply all changes."
+echo "Please restart current shell to apply all changes."
 
 # vim: et:ts=4:sw=4:ft=bash

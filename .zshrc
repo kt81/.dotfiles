@@ -33,6 +33,7 @@ zinit light-mode for \
 ### End of Zinit's installer chunk
 
 source /home/kt81/.dotfiles/zshrc.core
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Local Settings --------
 
