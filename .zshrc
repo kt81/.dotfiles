@@ -38,8 +38,10 @@ source $HOME/.dotfiles/zshrc.core.zsh
 
 # Local Settings --------
 
-/usr/bin/keychain --nogui $HOME/.ssh/id_rsa
-source $HOME/.keychain/$(hostname)-sh
+if command -v keychain > /dev/null 2&>1 ; then
+    /usr/bin/keychain --nogui $HOME/.ssh/id_rsa
+    source $HOME/.keychain/$(hostname)-sh
+fi
 
 # /Local Settings -------
 
