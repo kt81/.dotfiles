@@ -96,6 +96,18 @@ if [ $machine = 'Linux' ] ; then
 fi
 
 # ----------------------------------
+# ZSH
+# ----------------------------------
+[ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
+[ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
+sudo chsh $USER -s $(which zsh)
+
+# ----------------------------------
+# Common and PowerShell
+# ----------------------------------
+command -v pwsh > /dev/null 2>&1  && pwsh $repoRoot/setup.ps1
+
+# ----------------------------------
 # Common over *NIX Platforms
 # ----------------------------------
 if [ ! -e ~/.fzf ] ; then
@@ -109,17 +121,7 @@ if ! command -v asdf > /dev/null 2>&1 ; then
     git checkout "$(git describe --abbrev=0 --tags)"
 fi
 
-# ----------------------------------
-# Common and PowerShell
-# ----------------------------------
-command -v pwsh > /dev/null 2>&1  && pwsh $repoRoot/setup.ps1
-
-# ----------------------------------
-# ZSH
-# ----------------------------------
-[ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
-[ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
-
-echo "Please restart current shell to apply all changes."
+sudo chsh $USER -s $(which zsh)
+zsh
 
 # vim: et:ts=4:sw=4:ft=bash

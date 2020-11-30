@@ -32,11 +32,14 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-source /home/kt81/.dotfiles/zshrc.core
+source $HOME/.dotfiles/zshrc.core.zsh
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Local Settings --------
 
+/usr/bin/keychain --nogui $HOME/.ssh/id_rsa
+source $HOME/.keychain/$(hostname)-sh
 
 # /Local Settings -------
 

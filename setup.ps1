@@ -111,6 +111,7 @@ if (!(Test-Path $nvimAlPath)) {
     $plugInstalled = $true
 }
 if (!(Test-Path $vimAlPath)) {
+    New-Item -ItemType File $vimAlPath -Force
     Copy-Item $nvimAlPath $vimAlPath -Force
     vim +'PlugInstall --sync' +qa
     $plugInstalled = $true
