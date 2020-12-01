@@ -2,19 +2,23 @@
 # Plugins
 # ----------------------------------
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-zinit light zsh-users/zsh-autosuggestions
-zinit light zdharma/fast-syntax-highlighting
 zinit light agkozak/zsh-z
 zinit light softmoth/zsh-vim-mode
 zinit pack for fzf
+
 # From Prezto
-zinit snippet PZT::modules/environment/init.zsh
+zinit ice wait lucid svn blockf
+zinit snippet PZT::modules/environment
+zinit ice wait lucid blockf
+zinit light zsh-users/zsh-completions
+zinit ice wait lucid blockf
 zinit snippet PZT::modules/completion/init.zsh
 
-# ----------------------------------
-# Setting with zinit
-# ----------------------------------
-zinit ice wait"0" atinit"zicompinit; zicdreplay"
+zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
+zinit light zdharma/fast-syntax-highlighting
+
+zinit ice wait lucid atload"!_zsh_autosuggest_start"
+zinit light zsh-users/zsh-autosuggestions
 
 # ----------------------------------
 # etc
@@ -51,6 +55,18 @@ command -v nvim > /dev/null 2>&1 && alias vim=nvim
 command -v htop > /dev/null 2>&1 && alias top=htop
 command -v python3 > /dev/null 2>&1 && alias python=python3
 command -v pip3 > /dev/null 2>&1 && alias pip=pip3
+command -v fdfind > /dev/null 2>&1 && alias fd=fdfind
+
+# ls -> exa
+if [ -e $HOME/.cargo/env ] ; then
+    source $HOME/.cargo/env
+fi
+if command -v exa > /dev/null 2>&1 ; then 
+    alias ls='exa -F'
+    alias ll='exa -alF'
+    alias la='exa -aF'
+fi
+
 # anyenv
 command -v anyenv > /dev/null 2>&1 && eval "$(anyenv init -)"
 [ -e ~/.asdf/asdf.sh ] && . ~/.asdf/asdf.sh

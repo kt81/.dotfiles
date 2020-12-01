@@ -7,13 +7,14 @@
 repoRoot=$(realpath $(dirname "$0"))
 
 packagesCommon=(
+    # essentials
     zsh tmux neovim
-    git git-lfs tig
-    htop glances ripgrep
+    htop glances ripgrep exa
     curl wget file unzip gpg
-    # For asdf
+    # git
+    git git-lfs tig
+    # For asdf (Build tools)
     coreutils automake autoconf openssl libyaml readline libxslt libtool unixodbc
-    # PHP
     autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
 )
 
@@ -97,6 +98,9 @@ if [ $machine = 'Linux' ] ; then
         sudo apt install -y powershell
         rm packages-microsoft-prod.deb
     fi
+
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+    cargo install exa
 fi
 
 # ----------------------------------
