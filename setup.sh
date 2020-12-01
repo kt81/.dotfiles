@@ -10,7 +10,11 @@ packagesCommon=(
     zsh tmux neovim
     git git-lfs tig
     htop glances ripgrep
-    curl wget file
+    curl wget file unzip gpg
+    # For asdf
+    coreutils automake autoconf openssl libyaml readline libxslt libtool unixodbc
+    # PHP
+    autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
 )
 
 packagesMac=(
@@ -18,7 +22,7 @@ packagesMac=(
 )
 # ubuntu
 packagesLinux=(
-    fd-find build-essential apt-transport-https
+    fd-find apt-transport-https
 )
 
 # Shorthand
