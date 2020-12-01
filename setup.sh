@@ -1,14 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# setup.
-[ ! -e ~/.zshrc ] && ln -s ~/.common_conf/.zshrc ~/.zshrc
-[ ! -e ~/.vimrc ] && ln -s ~/.common_conf/.vimrc ~/.vimrc
-[ ! -e ~/.gvimrc ] && ln -s ~/.common_conf/.gvimrc ~/.gvimrc
-[ ! -e ~/.vim ] && mkdir ~/.vim
-[ ! -e ~/.config ] && mkdir ~/.config
-[ ! -e ~/.config/nvim ] && mkdir ~/.config/nvim
-[ ! -e ~/.config/nvim/init.vim ] && ln -s ~/.vimrc ~/.config/nvim/init.vim
-[ ! -e ~/.tmux.conf ] && ln -s ~/.common_conf/.tmux.conf ~/.tmux.conf
+#
+# For Mac and Linux
+#
+
+repoRoot=$(realpath $(dirname "$0"))
+
+packagesCommon=(
+    zsh tmux neovim
+    git git-lfs tig
+    htop glances ripgrep
+    curl wget file unzip gpg
+    # For asdf
+    coreutils automake autoconf openssl libyaml readline libxslt libtool unixodbc
+    # PHP
+    autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
+)
+
+packagesMac=(
+    fd
+)
+# ubuntu
+packagesLinux=(
+    fd-find apt-transport-https
+)
+
+# Shorthand
+cex() {
+    command -v $1 >/dev/null 2>&1;
+}
 
 # ----------------------------------
 # Check Environment ($machine)
@@ -23,6 +43,7 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 
+
 # ----------------------------------
 # Mac
 # ----------------------------------
@@ -30,7 +51,7 @@ esac
 if [ $machine = Mac ] ; then
 
     # Homebrew
-    if [ ! command -v brew > /dev/null 2>&1 ] ; then
+    if [ ! cex brew ] ; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     fi
 
@@ -62,16 +83,49 @@ fi
 # Linux
 # ----------------------------------
 
-# ----------------------------------
-# dein
-# ----------------------------------
+if [ $machine = 'Linux' ] ; then
+    read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
+    echo
+    if [[ $inst =~ ^[Yy]$ ]] ; then
+        sudo apt update
+        sudo apt install -y ${packagesCommon[@]} ${packagesLinux[@]}
 
-if [ ! -e ~/.cache/dein ] ; then
-    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > ~/dein_installer.sh
-    sh ~/dein_installer.sh ~/.cache/dein
-    rm -f ~/dein_installer.sh
+        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt update
+        sudo add-apt-repository universe
+        sudo apt install -y powershell
+        rm packages-microsoft-prod.deb
+    fi
 fi
 
-echo "Please restart the shell to apply all changes."
+# ----------------------------------
+# ZSH
+# ----------------------------------
+[ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
+[ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
+sudo chsh $USER -s $(which zsh)
 
-# vim: et:ts=4:sw=4
+# ----------------------------------
+# Common and PowerShell
+# ----------------------------------
+command -v pwsh > /dev/null 2>&1  && pwsh $repoRoot/setup.ps1
+
+# ----------------------------------
+# Common over *NIX Platforms
+# ----------------------------------
+if [ ! -e ~/.fzf ] ; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+fi
+
+if ! command -v asdf > /dev/null 2>&1 ; then
+    git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+    cd ~/.asdf
+    git checkout "$(git describe --abbrev=0 --tags)"
+fi
+
+sudo chsh $USER -s $(which zsh)
+zsh
+
+# vim: et:ts=4:sw=4:ft=bash

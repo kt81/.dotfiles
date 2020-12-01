@@ -1,14 +1,11 @@
-.config
+.dotfiles
 =======
-
-環境構築用。
 
 ```shell
 cd ~
 
-git clone https://github.com/kt81/.common_conf.git
-.common_conf/setup.sh
+git clone https://github.com/kt81/.dotfiles.git
+.dotfiles/setup.sh
 
-# chshもやってなければやる
-chsh -s /bin/zsh
+sudo chsh $USER -s $(which zsh)
 ```

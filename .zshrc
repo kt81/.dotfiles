@@ -1,61 +1,49 @@
-# ----------------------------------
-# zplug
-# ----------------------------------
-[ -e ~/.zplug ] || (curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh)
-source ~/.zplug/init.zsh
-
-zplug "modules/environment", from:prezto
-zplug "modules/terminal", from:prezto
-zplug "modules/editor", from:prezto
-zplug "modules/history", from:prezto
-zplug "modules/directory", from:prezto
-zplug "modules/spectrum", from:prezto
-zplug "modules/utility", from:prezto
-zplug "modules/completion", from:prezto
-zplug "modules/git", from:prezto
-zplug "modules/tmux", from:prezto
-zplug "modules/prompt", from:prezto
-zstyle ':prezto:module:prompt' theme 'paradox'
-zstyle ':prezto:module:utility:ls' color 'yes'
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-zplug load
+# vim: et:ts=4:sw=4:ft=zsh
 
-# ----------------------------------
-# etc
-# ----------------------------------
-setopt NO_BEEP
-export EDITOR=vim
-export VISUAL=vim
-export LC_ALL='en_US.UTF-8'
-# configure XDG Base Directory
-[ ! -e ~/.config ] && mkdir ~/.config
-export XDG_CONFIG_HOME=~/.config
-# configure aliases
-command -v nvim > /dev/null 2>&1 && alias vim=nvim
-command -v htop > /dev/null 2>&1 && alias top=htop
-command -v python3 > /dev/null 2>&1 && alias python=python3
-command -v pip3 > /dev/null 2>&1 && alias pip=pip3
-# anyenv
-command -v anyenv > /dev/null 2>&1 && eval "$(anyenv init -)"
-# path configuration
-if [ -e ~/.local/bin ] ; then
-    export PATH="$HOME/.local/bin:$PATH"
-fi
-if [ -e ~/.config/composer/vendor/bin ] ; then
-    export PATH="$HOME/.config/composer/vendor/bin:$PATH"
-fi
-if [ -e ~/Library/Android/sdk/platform-tools/ ] ; then
-    export PATH="$HOME/Library/Android/sdk/platform-tools/:$PATH"
-fi
-[ -e "$HOME/Library/Python/3.7/bin" ] && export PATH="$HOME/Library/Python/3.7/bin:$PATH"
+ZDIR=${ZDOTDIR:-$HOME}
 
-# vim: et:ts=4:sw=4
+### Added by Zinit's installer
+if [[ ! -f $ZDIR/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$ZDIR/.zinit" && command chmod g-rwX "$ZDIR/.zinit"
+    command git clone https://github.com/zdharma/zinit "$ZDIR/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
+
+source "$ZDIR/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zinit-zsh/z-a-rust \
+    zinit-zsh/z-a-as-monitor \
+    zinit-zsh/z-a-patch-dl \
+    zinit-zsh/z-a-bin-gem-node
+
+### End of Zinit's installer chunk
+
+source $HOME/.dotfiles/zshrc.core.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Local Settings --------
+
+if command -v keychain > /dev/null 2&>1 ; then
+    /usr/bin/keychain --nogui $HOME/.ssh/id_rsa -q
+    source $HOME/.keychain/$(hostname)-sh
+fi
+
+# /Local Settings -------
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
