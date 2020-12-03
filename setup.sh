@@ -113,7 +113,7 @@ sudo chsh $USER -s $(which zsh)
 # ----------------------------------
 # Common and PowerShell
 # ----------------------------------
-command -v pwsh > /dev/null 2>&1  && pwsh $repoRoot/setup.ps1
+command -v pwsh > /dev/null 2>&1 && pwsh $repoRoot/setup.common.ps1
 
 # ----------------------------------
 # Common over *NIX Platforms
@@ -129,6 +129,7 @@ if ! command -v asdf > /dev/null 2>&1 ; then
     git checkout "$(git describe --abbrev=0 --tags)"
 fi
 
+sh $repoRoot/git.sh
 sudo chsh $USER -s $(which zsh)
 zsh
 
