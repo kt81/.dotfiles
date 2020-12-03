@@ -9,6 +9,10 @@ Set-PSReadlineOption -ViModeIndicator Script -ViModeChangeHandler {
 
 }
 
+Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+Set-PsFzfOption -TabExpansion
+
 Set-Alias vim nvim
 Set-Alias vi nvim
 

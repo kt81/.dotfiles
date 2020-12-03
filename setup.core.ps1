@@ -75,6 +75,9 @@ task "Installing: oh-my-posh"
 doTested {!(Get-Module -ListAvailable oh-my-posh)} {Install-Module oh-my-posh -AllowPrerelease -Scope CurrentUser -Force}
 task "Installing: PSReadLine"
 doTested {!(Get-Module -ListAvailable PSReadLine)} {Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck}
+task "Installing: PSFzf"
+doTested {!(Get-Module -ListAvailable PSFzf)} {Install-Module -Name PSFzf -Scope CurrentUser -Force}
+
 
 task "Creating symbolic links for various settings."
 $psProfile = "Microsoft.PowerShell_profile.ps1"

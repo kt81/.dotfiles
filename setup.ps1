@@ -23,7 +23,7 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop 
 }
 
 scoop bucket add versions
-scoop install 7zip dotnet-sdk git git-lfs neovim-nightly pwsh sudo win32-openssh
+scoop install 7zip dotnet-sdk git git-lfs neovim-nightly pwsh sudo win32-openssh fzf
 
 pwsh $repoRoot\git.ps1 
-pwsh $repoRoot\setup.common.ps1
+pwsh $repoRoot\setup.core.ps1
