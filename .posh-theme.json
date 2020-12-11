@@ -5,58 +5,68 @@
             "alignment": "left",
             "segments": [
                 {
-                    "type": "root",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#100e23",
-                    "background": "#ffe9aa"
+                    "type": "os",
+                    "style": "plain",
+                    "foreground": "#26C6DA",
+                    "background": "#546E7A",
+                    "properties": {
+                        "postfix": " "
+                    }
                 },
                 {
-                    "type": "session",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#100e23",
-                    "background": "#ffffff"
+                    "type": "time",
+                    "style": "plain",
+                    "foreground": "#D4E157",
+                    "background": "#546E7A",
+                    "leading_diamond": "",
+                    "properties": {
+                        "time_format": "15:04:05",
+                        "prefix": "  ",
+                        "postfix": " "
+                    }
+                },
+                {
+                    "type": "root",
+                    "style": "plain",
+                    "foreground": "#26C6DA",
+                    "background": "#546E7A"
                 },
                 {
                     "type": "path",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#100e23",
-                    "background": "#91ddff",
+                    "style": "plain",
+                    "foreground": "#26C6DA",
+                    "background": "#546E7A",
                     "properties": {
-                        "folder_icon": "\uF115",
-                        "folder_separator_icon": "\uE0B1",
-                        "style": "short"
+                        "style": "short",
+                        "postfix": " "
                     }
                 },
                 {
                     "type": "git",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#193549",
-                    "background": "#95ffa4"
-                },
-                {
-                    "type": "python",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#100e23",
-                    "background": "#906cff",
+                    "style": "plain",
+                    "foreground": "#D4E157",
+                    "background": "#546E7A",
                     "properties": {
-                        "prefix": " \uE235 "
+                        "prefix": "<#26C6DA> </>"
                     }
                 },
                 {
-                    "type": "exit",
-                    "style": "powerline",
-                    "powerline_symbol": "\uE0B0",
-                    "foreground": "#ffffff",
-                    "background": "#ff8080",
+                    "type": "text",
+                    "style": "plain",
+                    "foreground": "#546E7A",
+                    "background": "transparent",
                     "properties": {
-                        "prefix": " \uE20F"
+                        "text": "",
+                        "prefix": "",
+                        "postfix": ""
                     }
                 }
+            ]
+        },
+        {
+            "type": "prompt",
+            "alignment": "right",
+            "segments": [
             ]
         },
         {
@@ -67,16 +77,17 @@
             "alignment": "left",
             "segments": [
                 {
-                    "type": "text",
+                    "type": "exit",
                     "style": "plain",
-                    "foreground": "#007ACC",
+                    "foreground": "#D4E157",
                     "properties": {
-                        "prefix": "",
-                        "text": "\u276F"
+                        "prefix": "❯",
+                        "always_enabled": true,
+                        "error_color": "#FF5252",
+                        "display_exit_code": false
                     }
                 }
             ]
         }
-    ],
-    "final_space": false
+    ]
 }
