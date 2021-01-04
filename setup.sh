@@ -14,7 +14,7 @@ packagesCommon=(
     # VCS
     git git-lfs tig subversion
     # For asdf (Build tools)
-    coreutils automake autoconf openssl libyaml-dev libreadline libxslt-dev libtool unixodbc
+    coreutils automake autoconf openssl libyaml-dev libxslt-dev libtool unixodbc
     autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
 )
 
