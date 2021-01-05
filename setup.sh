@@ -15,7 +15,7 @@ packagesCommon=(
     git git-lfs tig subversion
     # For asdf (Build tools)
     coreutils automake autoconf openssl libyaml-dev libxslt-dev libtool unixodbc
-    autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
+    autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
 )
 
 packagesMac=(
@@ -113,7 +113,7 @@ sudo chsh $USER -s $(which zsh)
 # ----------------------------------
 # Common and PowerShell
 # ----------------------------------
-command -v pwsh > /dev/null 2>&1 && pwsh $repoRoot/setup.core.ps1
+command -v pwsh > /dev/null 2>&1 && pwsh -NoProfile $repoRoot/setup.core.ps1
 
 # ----------------------------------
 # Common over *NIX Platforms
