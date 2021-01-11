@@ -9,3 +9,4 @@ git config --global color.ui auto
 git config --global push.default simple
 git config --global pull.rebase false
 git config --global alias.kfetch 'fetch --all --prune'
+git config --global core.autocrlf input
