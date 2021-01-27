@@ -16,14 +16,24 @@ if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adminis
 }
 
 if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop -ErrorAction SilentlyContinue)) {
-    # prefer scoop
-    Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-    Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-    # If installation failed, check if you are using ESET.
+    # prefer chocolatey
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 }
 
-scoop bucket add versions
-scoop install 7zip dotnet-sdk git git-lfs neovim-nightly pwsh sudo win32-openssh fzf
+if (Get-COmmand choco -ErrorAction SilentlyContinue) {
+    # Essentials
+    choco install -y git git-lfs 7zip dotnet-sdk pwsh gsudo openssh make
+    # Util
+    choco install -y `
+        ctrl2cap fd fzf ripgrep ntop.portable `
+        font-hackgen font-hackgen-nerd `
+        microsoft-windows-terminal
+    # Pre packages
+    choco install -y --pre neovim
 
-pwsh $repoRoot\git.ps1 
-pwsh $repoRoot\setup.core.ps1
+    $pwsh = "C:\Program Files\PowerShell\7\pwsh.exe"
+    & $pwsh $repoRoot\git.ps1 
+    & $pwsh $repoRoot\setup.core.ps1
+}
