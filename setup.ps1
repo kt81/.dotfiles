@@ -27,7 +27,8 @@ if (Get-COmmand choco -ErrorAction SilentlyContinue) {
     choco install -y git git-lfs 7zip dotnet-sdk pwsh gsudo openssh make
     # Util
     choco install -y `
-        ctrl2cap fd fzf ripgrep ntop.portable `
+        ctrl2cap fd fzf ripgrep ntop.portable bottom`
+        shellcheck `
         font-hackgen font-hackgen-nerd `
         microsoft-windows-terminal
     # Pre packages
