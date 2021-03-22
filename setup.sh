@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 #
 # For Mac and Linux
 #
@@ -14,16 +16,19 @@ packagesCommon=(
     # VCS
     git git-lfs tig subversion
     # For asdf (Build tools)
-    coreutils automake autoconf openssl libyaml-dev libxslt-dev libtool unixodbc
-    autoconf bison build-essential gettext libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
+    coreutils automake autoconf openssl libtool unixodbc bison gettext openssl pkg-config re2c 
 )
 
 packagesMac=(
     fd exa
+    coreutils libyaml readline libxslt libtool unixodbc gd
+    libjpeg mysql-connector-c oniguruma
 )
 # ubuntu
 packagesLinux=(
     fd-find apt-transport-https
+    build-essential libyaml-dev libxslt-dev libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev 
+    libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev zlib1g-dev
 )
 
 # Shorthand
@@ -52,16 +57,12 @@ esac
 if [ $machine = Mac ] ; then
 
     # Homebrew
-    if [ ! cex brew ] ; then
+    if ! cex brew ; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     fi
 
     # Homebrew Packages
-    brew install \
-        zsh tmux vim neovim \
-        git git-lfs tig \
-        htop glances \
-        php python composer
+    brew install ${packagesCommon[@]} ${packagesMac[@]}
 
     # anyenv
     if [ ! command -v anyenv > /dev/null 2>&1 ] ; then
