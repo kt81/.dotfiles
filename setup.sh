@@ -12,7 +12,7 @@ packagesCommon=(
     # essentials
     zsh tmux neovim
     htop glances ripgrep 
-    curl wget file unzip gpg
+    curl wget file unzip gpg jq
     # VCS
     git git-lfs tig subversion
     # For asdf (Build tools)
@@ -100,8 +100,12 @@ if [ $machine = 'Linux' ] ; then
         rm packages-microsoft-prod.deb
     fi
 
-    curl https://sh.rustup.rs -sSf | sh -s -- -y
-    cargo install exa
+    if ! cex cargo ; then
+        curl https://sh.rustup.rs -sSf | sh -s -- -y
+    fi
+    if ! cex exa ; then
+        cargo install exa
+    fi
 fi
 
 # ----------------------------------
@@ -114,7 +118,7 @@ sudo chsh $USER -s $(which zsh)
 # ----------------------------------
 # Common and PowerShell
 # ----------------------------------
-command -v pwsh > /dev/null 2>&1 && pwsh -NoProfile $repoRoot/setup.core.ps1
+cex pwsh && pwsh -NoProfile $repoRoot/setup.core.ps1
 
 # ----------------------------------
 # Common over *NIX Platforms
