@@ -34,8 +34,6 @@ zinit light-mode for \
 
 source $HOME/.dotfiles/zshrc.core.zsh
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Local Settings --------
 
 if command -v keychain > /dev/null 2>&1 ; then

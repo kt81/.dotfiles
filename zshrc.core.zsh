@@ -76,4 +76,10 @@ if [ -e ~/.local/bin ] ; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# local configuration
+[ -f ~/.zshrc.mine ] && source ~/.zshrc.mine
+
 # vim: et:ts=4:sw=4
