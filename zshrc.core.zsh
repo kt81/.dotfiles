@@ -1,6 +1,11 @@
 # ----------------------------------
 # Plugins
 # ----------------------------------
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit light agkozak/zsh-z
 zinit light softmoth/zsh-vim-mode
@@ -15,8 +20,7 @@ zinit ice wait lucid blockf
 zinit snippet PZT::modules/completion/init.zsh
 
 zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
-zinit light zdharma/fast-syntax-highlighting
-
+zinit load zsh-users/zsh-syntax-highlighting
 zinit ice wait lucid atload"!_zsh_autosuggest_start"
 zinit light zsh-users/zsh-autosuggestions
 

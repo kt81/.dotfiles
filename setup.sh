@@ -26,7 +26,7 @@ packagesMac=(
 )
 # ubuntu
 packagesLinux=(
-    fd-find apt-transport-https
+    fd-find apt-transport-https software-properties-common
     build-essential libyaml-dev libxslt-dev libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev 
     libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev zlib1g-dev
 )
@@ -101,7 +101,11 @@ if [ $machine = 'Linux' ] ; then
     fi
 
     if ! cex cargo ; then
-        curl https://sh.rustup.rs -sSf | sh -s -- -y
+        if [ -e ~/.cargo/env ] ; then
+            source ~/.cargo/env
+        else
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+        fi
     fi
     if ! cex exa ; then
         cargo install exa
@@ -112,7 +116,12 @@ fi
 # ZSH
 # ----------------------------------
 [ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
-[ -e ~/.zinit ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -e $ZEINIT_HOME ]] ; then
+    mkdir -p "$(dirname $ZINIT_HOME)"
+    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+
 sudo chsh $USER -s $(which zsh)
 
 # ----------------------------------
