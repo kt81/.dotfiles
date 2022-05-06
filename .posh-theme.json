@@ -5,6 +5,15 @@
             "alignment": "left",
             "segments": [
                 {
+                    "type": "envvar",
+                    "style": "powerline",
+                    "foreground": "#26C6DA",
+                    "background": "#546E7A",
+                    "properties": {
+                        "var_name": "SHELL_VI_MODE"
+                    }
+                },
+                {
                     "type": "os",
                     "style": "plain",
                     "foreground": "#26C6DA",

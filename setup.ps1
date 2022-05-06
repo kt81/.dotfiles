@@ -15,6 +15,9 @@ if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adminis
     Exit 1
 }
 
+# Upgrade winget
+# winget upgrade "App Installer" --accept-package-agreements -s msstore
+
 if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop -ErrorAction SilentlyContinue)) {
     # prefer chocolatey
     Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -22,7 +25,7 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop 
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 }
 
-if (Get-COmmand choco -ErrorAction SilentlyContinue) {
+if (Get-Command choco -ErrorAction SilentlyContinue) {
     # Essentials
     choco install -y git git-lfs 7zip dotnet-sdk pwsh gsudo openssh make
     # Util
