@@ -6,7 +6,7 @@ set -e
 # For Mac and Linux
 #
 
-repoRoot=$(realpath $(dirname "$0"))
+repoRoot=$(realpath "$(dirname "$0")")
 
 packagesCommon=(
     # essentials
@@ -33,7 +33,7 @@ packagesLinux=(
 
 # Shorthand
 cex() {
-    command -v $1 >/dev/null 2>&1;
+    command -v "$1" &> /dev/null;
 }
 
 # ----------------------------------
@@ -54,7 +54,7 @@ esac
 # Mac
 # ----------------------------------
 
-if [ $machine = Mac ] ; then
+if [[ $machine = Mac ]] ; then
 
     # Homebrew
     if ! cex brew ; then
@@ -62,10 +62,10 @@ if [ $machine = Mac ] ; then
     fi
 
     # Homebrew Packages
-    brew install ${packagesCommon[@]} ${packagesMac[@]}
+    brew install "${packagesCommon[@]}" "${packagesMac[@]}"
 
     # anyenv
-    if [ ! command -v anyenv > /dev/null 2>&1 ] ; then
+    if ! cex anyenv ; then
         brew install anyenv
         anyenv init
         eval "$(anyenv init -)"
@@ -85,12 +85,12 @@ fi
 # Linux
 # ----------------------------------
 
-if [ $machine = 'Linux' ] ; then
+if [[ $machine = 'Linux' ]] ; then
     read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
         sudo apt update
-        sudo apt install -y ${packagesCommon[@]} ${packagesLinux[@]}
+        sudo apt install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
 
         wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
         sudo dpkg -i packages-microsoft-prod.deb
@@ -101,8 +101,8 @@ if [ $machine = 'Linux' ] ; then
     fi
 
     if ! cex cargo ; then
-        if [ -e ~/.cargo/env ] ; then
-            source ~/.cargo/env
+        if [[ -e $HOME/.cargo/env ]] ; then
+            source "$HOME/.cargo/env"
         else
             curl https://sh.rustup.rs -sSf | sh -s -- -y
         fi
@@ -115,19 +115,19 @@ fi
 # ----------------------------------
 # ZSH
 # ----------------------------------
-[ -e ~/.zshrc ] || ln -s $repoRoot/.zshrc ~/.zshrc
+[ -e ~/.zshrc ] || ln -s "$repoRoot/.zshrc" ~/.zshrc
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-if [[ ! -e $ZEINIT_HOME ]] ; then
-    mkdir -p "$(dirname $ZINIT_HOME)"
+if [[ ! -e $ZINIT_HOME ]] ; then
+    mkdir -p "$(dirname "$ZINIT_HOME")"
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-sudo chsh $USER -s $(which zsh)
+sudo chsh "$USER" -s "$(which zsh)"
 
 # ----------------------------------
 # Common and PowerShell
 # ----------------------------------
-cex pwsh && pwsh -NoProfile $repoRoot/setup.core.ps1
+cex pwsh && pwsh -NoProfile "$repoRoot/setup.core.ps1"
 
 # ----------------------------------
 # Common over *NIX Platforms
@@ -143,8 +143,7 @@ if ! command -v asdf > /dev/null 2>&1 ; then
     git checkout "$(git describe --abbrev=0 --tags)"
 fi
 
-sh $repoRoot/git.sh
-sudo chsh $USER -s $(which zsh)
+"$repoRoot/git.sh"
 zsh
 
 # vim: et:ts=4:sw=4:ft=bash

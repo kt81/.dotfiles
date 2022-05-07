@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 # Only works on PowerShell Core
-
+$PSDefaultParameterValues['*:Encoding'] = 'utf8'
 $repoRoot = $PSScriptRoot
 $linuxXdgData = ([string]::IsNullOrEmpty($env:XDG_DATA_HOME) ? "$HOME/.local/share" : $env:XDG_DATA_HOME);
 $linuxXdgConfig = ([string]::IsNullOrEmpty($env:XDG_CONFIG_HOME) ? "$HOME/.config" : $env:XDG_CONFIG_HOME);
@@ -19,14 +19,31 @@ function doTested {
     param(
         [scriptblock] $TestScript,
         [scriptblock] $DoScript,
-        [string] $SkippedResultMessage = "Skipped."
+        [string] $SkippedResultMessage = "Skipped.",
+        [scriptblock] $ElseScript = $null
     )
     $result = ($TestScript.Invoke()) -and ($DoScript.Invoke())
     if ($result) {
         Return $result
+    } elseif ($ElseScript -ne $null) {
+        Return ($ElseScript.Invoke())
     } else {
         skip $SkippedResultMessage
     }
+}
+function installOrUpdate {
+    param(
+        [parameter(mandatory=$true)]
+        [string] $Target,
+        [switch] $Force = $false
+    )
+    if ($Force -or !(Get-Module -ListAvailable $Target)) {
+        $cmd = "Install-Module $Target -Scope CurrentUser -Force"
+    } else {
+        $cmd = "Update-Module $Target -Scope CurrentUser"
+    }
+    Write-Host $cmd
+    Invoke-Expression $cmd
 }
 function linkNx {
     param(
@@ -61,23 +78,24 @@ if ($IsWindows) {
     }
 
     Write-Host -ForegroundColor Green 'Enabling windows feature: Japanese Fonts'
-    DISM.exe /Online /Add-Capability /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0
-
-    if (!(Get-Command code -ErrorAction SilentlyContinue)) {
-        Write-Host -ForegroundColor Green -Object 'Installing Visual Studio Code'
-        Invoke-Expression (Invoke-WebRequest https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/scripts/Install-VSCode.ps1)
+    doTested {!(DISM.exe /Online /Get-CapabilityInfo /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0 | Select-String -Pattern "インストール済み|Installed")} {
+        DISM.exe /Online /Add-Capability /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0
     }
+
+    task "Installing: oh-my-posh"
+    doTested {!(Get-Command vim -ErrorAction SilentlyContinue)} {
+        winget install oh-my-posh --accept-package-agreements
+    } # -ElseScript { winget upgrade oh-my-posh --accept-package-agreements }
 }
 
 task "Installing: posh-git"
-doTested {!(Get-Module -ListAvailable posh-git)} {Install-Module posh-git -Scope CurrentUser -Force}
-task "Installing: oh-my-posh"
-doTested {!(Get-Module -ListAvailable oh-my-posh)} {Install-Module oh-my-posh -AllowPrerelease -Scope CurrentUser -Force}
+installOrUpdate posh-git
 task "Installing: PSReadLine"
-doTested {!(Get-Module -ListAvailable PSReadLine)} {Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck}
+installOrUpdate PSReadLine -Force
 task "Installing: PSFzf"
-doTested {!(Get-Module -ListAvailable PSFzf)} {Install-Module -Name PSFzf -Scope CurrentUser -Force}
-
+installOrUpdate PSFzf
+task "Installing: ZLocation (z)"
+installOrUpdate ZLocation
 
 task "Creating symbolic links for various settings."
 $psProfile = "Microsoft.PowerShell_profile.ps1"

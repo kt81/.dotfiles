@@ -15,29 +15,43 @@ if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adminis
     Exit 1
 }
 
-# Upgrade winget
-# winget upgrade "App Installer" --accept-package-agreements -s msstore
-
 if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop -ErrorAction SilentlyContinue)) {
     # prefer chocolatey
     Set-ExecutionPolicy Bypass -Scope Process -Force
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+    # to make `refreshenv` works immediately
+    $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).path)\..\.."
+    Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 }
 
+# Winget Packages 
+winget upgrade "App Installer" -s msstore --accept-package-agreements
+winget install Microsoft.WindowsTerminal --accept-package-agreements
+winget install Microsoft.VisualStudioCode --accept-package-agreements
+winget install M2Team.NanaZip --accept-package-agreements
+winget install -e --id JetBrains.Toolbox --accept-package-agreements
+
+# Chocolatey Packages
 if (Get-Command choco -ErrorAction SilentlyContinue) {
     # Essentials
-    choco install -y git git-lfs 7zip dotnet-sdk pwsh gsudo openssh make
+    choco install -y git git-lfs dotnet-sdk pwsh gsudo openssh make
     # Util
     choco install -y `
-        ctrl2cap fd fzf ripgrep ntop.portable bottom`
+        ctrl2cap fd fzf ripgrep ntop.portable bottom `
         shellcheck `
-        font-hackgen font-hackgen-nerd `
-        microsoft-windows-terminal
+        font-hackgen font-hackgen-nerd
     # Pre packages
     choco install -y --pre neovim
 
+    refreshenv
+
     $pwsh = "C:\Program Files\PowerShell\7\pwsh.exe"
-    & $pwsh $repoRoot\git.ps1 
-    & $pwsh $repoRoot\setup.core.ps1
+} else {
+    # Pray that pwsh exists in the PATH
+    $pwsh = "pwsh"
 }
+
+& $pwsh $repoRoot\git.ps1 
+& $pwsh $repoRoot\setup.core.ps1

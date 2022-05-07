@@ -1,14 +1,13 @@
 Import-Module posh-git
-Import-Module oh-my-posh
 Import-Module ZLocation
-Set-PoshPrompt -Theme ~/.posh-theme.json
+oh-my-posh init pwsh --config ~/.posh-theme.json | Invoke-Expression
 
 # PSReadline Options
 Set-PSReadlineOption -EditMode vi
-Set-PSReadlineOption -ViModeIndicator Script -ViModeChangeHandler {
-    Param($mode)
-    $Env:SHELL_VI_MODE = $mode
-}
+# Set-PSReadlineOption -ViModeIndicator Script -ViModeChangeHandler {
+#     Param($mode)
+#     $Env:SHELL_VI_MODE = $mode
+# }
 #Set-PSReadlineOption -ViModeIndicator Prompt
 #Set-PSReadlineOption -ViModeIndicator Cursor
 
