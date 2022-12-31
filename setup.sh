@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+source lib.sh
 
 #
 # For Mac and Linux
@@ -30,11 +31,9 @@ packagesLinux=(
     build-essential libyaml-dev libxslt-dev libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev 
     libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev zlib1g-dev
 )
-
-# Shorthand
-cex() {
-    command -v "$1" &> /dev/null;
-}
+packagesLinuxCargo=(
+    exa git-delta
+)
 
 # ----------------------------------
 # Check Environment ($machine)
@@ -89,15 +88,16 @@ if [[ $machine = 'Linux' ]] ; then
     read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
-        sudo apt update
-        sudo apt install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
+        sudo apt-get update
+        sudo apt-get install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
 
-        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-        sudo dpkg -i packages-microsoft-prod.deb
-        sudo apt update
-        sudo add-apt-repository universe
-        sudo apt install -y powershell
-        rm packages-microsoft-prod.deb
+        if ! dpkg -s packages-microsoft-prod &>/dev/null ; then
+            wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+            sudo dpkg -i packages-microsoft-prod.deb
+            sudo apt-get update
+            sudo apt-get install -y powershell
+            rm packages-microsoft-prod.deb
+        fi
     fi
 
     if ! cex cargo ; then
@@ -107,9 +107,8 @@ if [[ $machine = 'Linux' ]] ; then
             curl https://sh.rustup.rs -sSf | sh -s -- -y
         fi
     fi
-    if ! cex exa ; then
-        cargo install exa
-    fi
+    rustup update
+    cargo install "${packagesLinuxCargo[@]}"
 fi
 
 # ----------------------------------
@@ -141,6 +140,16 @@ if ! command -v asdf > /dev/null 2>&1 ; then
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf
     cd ~/.asdf
     git checkout "$(git describe --abbrev=0 --tags)"
+fi
+
+if [ ! -d ~/.tmux/plugins/tpm ] ; then
+    mkdir -p ~/.tmux/plugins
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+else
+    pushd ~/.tmux/plugins/tpm/
+    git fetch --all --prune
+    git reset --hard origin/HEAD
+    popd
 fi
 
 "$repoRoot/git.sh"

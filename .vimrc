@@ -139,6 +139,8 @@ colorscheme hybrid
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
+let g:signify_sign_add = '' " nf-fa-plus
+
 " <<< Fern >>>
 augroup FernAutoOpen
   autocmd!
@@ -153,5 +155,11 @@ augroup my-glyph-palette
   autocmd! *
   autocmd FileType fern,startify call glyph_palette#apply()
 augroup END
+
+" <<< vim-markdown (via vim-plyglot) >>>
+" I really don't want to set them up individually, but it's just too inconvenient.
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_markdown_fenced_languages = ['csharp=cs', 'shell=sh']
 
 " vim: ts=2 sts=-1 sw=0 et :

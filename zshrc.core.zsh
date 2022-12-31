@@ -6,27 +6,42 @@ zinit light-mode for \
     zdharma-continuum/zinit-annex-bin-gem-node \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
+
+# Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
 zinit ice depth=1; zinit light romkatv/powerlevel10k
+# Jump quickly to directories that you have visited "frecently."
+# A native Zsh port of z.sh with added features.
 zinit light agkozak/zsh-z
+# Friendly bindings for ZSH's vi mode.
 zinit light softmoth/zsh-vim-mode
-zinit pack for fzf
+# fzf extension
+zinit pack"default+keys" for fzf
+# Sets general shell options and defines environment variables.
+zinit snippet PZTM::environment
 
-# From Prezto
-zinit ice wait lucid svn blockf
-zinit snippet PZT::modules/environment
-zinit ice wait lucid blockf
-zinit light zsh-users/zsh-completions
-zinit ice wait lucid blockf
-zinit snippet PZT::modules/completion/init.zsh
+# fast-syntax-highlighting: Feature-rich syntax highlighting for ZSH
+# zsh-completions: Additional completion definitions for Zsh.
+# zsh-autosuggentions: Fish-like autosuggestions for zsh
+zinit wait lucid for \
+ atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    zdharma-continuum/fast-syntax-highlighting \
+ blockf \
+    zsh-users/zsh-completions \
+ atload"!_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions
+# provides additional completions from the zsh-completions project.
+zinit snippet PZTM::completion
 
-zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
-zinit load zsh-users/zsh-syntax-highlighting
-zinit ice wait lucid atload"!_zsh_autosuggest_start"
-zinit light zsh-users/zsh-autosuggestions
+#zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
+#zinit light zsh-users/zsh-syntax-highlighting
+zinit ice as:program cp:"httpstat.sh -> httpstat" pick:httpstat
+zinit light b4b4r07/httpstat
 
 # ----------------------------------
 # etc
 # ----------------------------------
+
+source ${HOME}/.dotfiles/lib.sh
 
 # Common Env
 export EDITOR=vim
@@ -55,35 +70,42 @@ setopt hist_ignore_dups
 setopt EXTENDED_HISTORY
 
 # configure aliases
-command -v nvim > /dev/null 2>&1 && alias vim=nvim
-command -v htop > /dev/null 2>&1 && alias top=htop
-command -v python3 > /dev/null 2>&1 && alias python=python3
-command -v pip3 > /dev/null 2>&1 && alias pip=pip3
-command -v fdfind > /dev/null 2>&1 && alias fd=fdfind
+cex nvim    && alias vim=nvim
+cex htop    && alias top=htop
+cex python3 && alias python=python3
+cex pip3    && alias pip=pip3
+cex fdfind  && alias fd=fdfind
 
 # ls -> exa
 if [ -e $HOME/.cargo/env ] ; then
     source $HOME/.cargo/env
 fi
-if command -v exa > /dev/null 2>&1 ; then 
+if cex exa ; then 
     alias ls='exa -F'
     alias ll='exa -alF'
     alias la='exa -aF'
 fi
 
-# anyenv
-command -v anyenv > /dev/null 2>&1 && eval "$(anyenv init -)"
-[ -e ~/.asdf/asdf.sh ] && . ~/.asdf/asdf.sh
+# anyenv or asdf
+cex anyenv && eval "$(anyenv init -)"
+[ -f ~/.asdf/asdf.sh ] && . ~/.asdf/asdf.sh
 
 # path configuration
-if [ -e ~/.local/bin ] ; then
+if [ -d ~/.local/bin ] ; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # local configuration
-[ -f ~/.zshrc.mine ] && source ~/.zshrc.mine
+if [ -f ~/.zshrc.local ] ; then
+    source ~/.zshrc.local
+else
+    touch ~/.zshrc.local
+fi
 
-# vim: et:ts=4:sw=4
+# keychain
+if cex keychain && [ -f $HOME/.ssh/id-rsa ]; then
+  /usr/bin/keychain --nogui $HOME/.ssh/id_rsa -q
+  source $HOME/.keychain/$(hostname)-sh
+fi
+
+# vim: et:ts=4:sw=0:sts=-1

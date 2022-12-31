@@ -1,4 +1,9 @@
-# vim: et:ts=4:sw=4:ft=zsh
+# vim: et:ts=2:sw=0:sts=-1:ft=zsh
+
+#
+# This file is separated from "Core" because it may be used by external tools
+# to check for the existence of their settings.
+#
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -13,16 +18,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-source $HOME/.dotfiles/zshrc.core.zsh
-
-# Local Settings --------
-
-if command -v keychain > /dev/null 2>&1 ; then
-    /usr/bin/keychain --nogui $HOME/.ssh/id_rsa -q
-    source $HOME/.keychain/$(hostname)-sh
-fi
-
-# /Local Settings -------
+# Core settings
+source "${HOME}/.dotfiles/zshrc.core.zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
