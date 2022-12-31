@@ -41,7 +41,7 @@ zinit light b4b4r07/httpstat
 # etc
 # ----------------------------------
 
-source ${HOME}/.dotfiles/lib.sh
+source ${HOME}/.dotfiles/lib/libxnix.sh
 
 # Common Env
 export EDITOR=vim

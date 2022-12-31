@@ -31,7 +31,7 @@ function doTested {
         skip $SkippedResultMessage
     }
 }
-function installOrUpdate {
+function installOrUpdateModule {
     param(
         [parameter(mandatory=$true)]
         [string] $Target,
@@ -89,13 +89,13 @@ if ($IsWindows) {
 }
 
 task "Installing: posh-git"
-installOrUpdate posh-git
+installOrUpdateModule posh-git
 task "Installing: PSReadLine"
-installOrUpdate PSReadLine -Force
+installOrUpdateModule PSReadLine -Force
 task "Installing: PSFzf"
-installOrUpdate PSFzf
+installOrUpdateModule PSFzf
 task "Installing: ZLocation (z)"
-installOrUpdate ZLocation
+installOrUpdateModule ZLocation
 
 task "Creating symbolic links for various settings."
 $psProfile = "Microsoft.PowerShell_profile.ps1"

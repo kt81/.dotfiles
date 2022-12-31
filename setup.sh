@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 set -e
-source lib.sh
 
 #
 # For Mac and Linux
 #
 
 repoRoot=$(realpath "$(dirname "$0")")
+source "${repoRoot}/lib/libxnix.sh"
 
 packagesCommon=(
     # essentials

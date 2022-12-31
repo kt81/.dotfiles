@@ -2,6 +2,8 @@
 
 $repoRoot = $PSScriptRoot
 
+. "$repoRoot/lib/libsetup.ps1"
+
 if ($IsLinux -or $IsMacOS) {
     # There's no $IsWindows definition on old PowerShell
     Write-Error "This script should be run on Windows only." -Category InvalidOperation
@@ -27,19 +29,22 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop 
 }
 
 # Winget Packages 
-winget upgrade "App Installer" -s msstore --accept-package-agreements
-winget install Microsoft.WindowsTerminal --accept-package-agreements
-winget install Microsoft.VisualStudioCode --accept-package-agreements
-winget install M2Team.NanaZip --accept-package-agreements
-winget install -e --id JetBrains.Toolbox --accept-package-agreements
+#winget upgrade "App Installer" -s msstore --accept-package-agreements
+Upstall-WingetPackage 9NBLGGH4NNS1 # App Installer
+Upstall-WingetPackage Git.Git
+Upstall-WingetPackage GitHub.GitLFS
+Upstall-WingetPackage Microsoft.WindowsTerminal
+Upstall-WingetPackage Microsoft.VisualStudioCode
+Upstall-WingetPackage M2Team.NanaZip
+Upstall-WingetPackage JetBrains.Toolbox
 
 # Chocolatey Packages
 if (Get-Command choco -ErrorAction SilentlyContinue) {
     # Essentials
-    choco install -y git git-lfs dotnet-sdk pwsh gsudo openssh make
+    choco install -y dotnet-sdk pwsh gsudo openssh make
     # Util
     choco install -y `
-        ctrl2cap fd fzf ripgrep ntop.portable bottom `
+        ctrl2cap fd fzf ripgrep ntop.portable bottom jq `
         shellcheck `
         font-hackgen font-hackgen-nerd
     # Pre packages
