@@ -103,7 +103,7 @@ else
 fi
 
 # keychain
-if cex keychain && [ -f $HOME/.ssh/id-rsa ]; then
+if cex keychain && [ -f $HOME/.ssh/id_rsa ]; then
   /usr/bin/keychain --nogui $HOME/.ssh/id_rsa -q
   source $HOME/.keychain/$(hostname)-sh
 fi
