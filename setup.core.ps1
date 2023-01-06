@@ -1,7 +1,16 @@
 #!/usr/bin/env pwsh
+#requires -PSEdition Core
+# Only works on PowerShell 7.x or above
 
-# Only works on PowerShell Core
 $PSDefaultParameterValues['*:Encoding'] = 'utf8'
+$ErrorActionPreference = "Stop"
+
+# ====================================================================
+#
+# Settings and Utilities
+#
+# ====================================================================
+
 $repoRoot = $PSScriptRoot
 $linuxXdgData = ([string]::IsNullOrEmpty($env:XDG_DATA_HOME) ? "$HOME/.local/share" : $env:XDG_DATA_HOME);
 $linuxXdgConfig = ([string]::IsNullOrEmpty($env:XDG_CONFIG_HOME) ? "$HOME/.config" : $env:XDG_CONFIG_HOME);
@@ -69,6 +78,12 @@ function linkNx {
     }
 }
 
+# ====================================================================
+#
+# Main
+#
+# ====================================================================
+
 if ($IsWindows) {
     # Admin privilege is required in Windows to create symlinks (if not in dev mode)
     $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -101,19 +116,20 @@ task "Creating symbolic links for various settings."
 $psProfile = "Microsoft.PowerShell_profile.ps1"
 if ($IsWindows) {
     $psProfileDest = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "PowerShell" $psProfile
+    $nvimInitDest = Join-Path $env:LOCALAPPDATA "/nvim/init.vim"
+    $ideavimrcDest = "~/_ideavimrc"
 } else {
     $psProfileDest = Join-Path $linuxXdgConfig "powershell" $psProfile
+    $nvimInitDest = Join-Path $linuxXdgConfig "/nvim/init.vim"
+    $ideavimrcDest = "~/.ideavimrc"
 }
+echo $ideavimrcDest
+
 linkNx $psProfileDest $psProfile
 linkNx ~/.posh-theme.json .posh-theme.json
 linkNx ~/.vimrc .vimrc
-
-if ($IsWindows) {
-    $nvimInitPath = Join-Path $env:LOCALAPPDATA "/nvim/init.vim"
-} else {
-    $nvimInitPath = Join-Path $linuxXdgConfig "/nvim/init.vim"
-}
-linkNx $nvimInitPath .vimrc
+linkNx $nvimInitDest .vimrc
+linkNx $ideavimrcDest .ideavimrc
 #linkNx ~/.tmux.conf .tmux.conf
 
 task "Installing: vim-plug"
@@ -142,5 +158,3 @@ if (!$plugInstalled) {
 }
 
 Write-Host -ForegroundColor Yellow -Object "Done!!!"
-
-#[ ! -e ~/.zshrc ] && ln -s ~/.common_conf/.zshrc ~/.zshrc

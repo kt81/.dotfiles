@@ -41,7 +41,7 @@ Upstall-WingetPackage JetBrains.Toolbox
 # Chocolatey Packages
 if (Get-Command choco -ErrorAction SilentlyContinue) {
     # Essentials
-    choco install -y dotnet-sdk pwsh gsudo openssh make
+    choco install -y dotnet-sdk pwsh gsudo openssh make netcat
     # Util
     choco install -y `
         ctrl2cap fd fzf ripgrep ntop.portable bottom jq `
