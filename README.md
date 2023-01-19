@@ -4,15 +4,15 @@
 Overview
 --------
 
-This repository is intended to be a starter kit to setup development environment.
+This repository is intended to be used as a starting point for setting up a development host with my favorite flavors.
 
-Target environment:
+### Target environment
 
 - Windows (10 / 11)
 - macOS (Big Sur / Monterey)
 - Linux (Ubuntu 22.04 with WSL / Other debian family systems (not tested))
 
-Will do:
+### Will do
 
 - Install 3rd party package manager (Homebrew for mac / Chocolatey for windows)
 - Install newer version of PowerShell (pwsh) on ANY SYSTEM
@@ -20,16 +20,16 @@ Will do:
 - Install oh-my-posh and PowerLevel10k as prompt
 - Create symbolic links for dotfiles
 
-Including:
+### Including
 
-- Nice shell prompt
+- Nice shell prompt (Oh My Posh / Powerlevel10k)
 - IDE-like neovim
 - powerline-like tmux theme
 - Build tools
 - asdf
 - cargo
-- powershell
-- Some other nice tools
+- Powershell anywhere
+- Some other awesome tools
 
 Usage
 ------
@@ -46,9 +46,11 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kt81/.dotfiles/HEAD/install.sh)"
+```
 
-# OR
+or 
 
+```bash
 cd ~
 git clone https://github.com/kt81/.dotfiles.git
 .dotfiles/setup.sh
@@ -57,5 +59,4 @@ git clone https://github.com/kt81/.dotfiles.git
 Disclaimer
 ----------
 
-The scripts in this repository install certain amount of packages on running system automatically and use `sudo` as needed.
-If you want to customize and reuse this repo, please make sure that you understand what the scripts will do.
+The scripts in this repository will automatically install a certain number of packages on your system and use sudo as needed. If you want to customize and reuse this repo, please make sure that you understand what the scripts will do.
