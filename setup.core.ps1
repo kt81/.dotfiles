@@ -98,8 +98,8 @@ if ($IsWindows) {
     }
 
     task "Installing: oh-my-posh"
-    doTested {!(Get-Command vim -ErrorAction SilentlyContinue)} {
-        winget install oh-my-posh --accept-package-agreements
+    doTested {!(Get-Command oh-my-posh -ErrorAction SilentlyContinue)} {
+        winget install oh-my-posh --source winget --accept-package-agreements
     } # -ElseScript { winget upgrade oh-my-posh --accept-package-agreements }
 }
 
