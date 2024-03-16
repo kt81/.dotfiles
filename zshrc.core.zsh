@@ -76,14 +76,14 @@ cex python3 && alias python=python3
 cex pip3    && alias pip=pip3
 cex fdfind  && alias fd=fdfind
 
-# ls -> exa
+# ls -> eza
 if [ -e $HOME/.cargo/env ] ; then
     source $HOME/.cargo/env
 fi
-if cex exa ; then 
-    alias ls='exa -F'
-    alias ll='exa -alF'
-    alias la='exa -aF'
+if cex eza ; then 
+    alias ls='eza -F'
+    alias ll='eza -alF'
+    alias la='eza -aF'
 fi
 
 # anyenv or asdf

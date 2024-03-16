@@ -21,7 +21,7 @@ packagesCommon=(
 )
 
 packagesMac=(
-    fd exa
+    fd eza
     coreutils libyaml readline libxslt libtool unixodbc gd
     libjpeg mysql-connector-c oniguruma
 )
@@ -32,7 +32,7 @@ packagesLinux=(
     libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev zlib1g-dev
 )
 packagesLinuxCargo=(
-    exa git-delta
+    eza git-delta
 )
 
 # ----------------------------------
@@ -88,11 +88,12 @@ if [[ $machine = 'Linux' ]] ; then
     read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
+        source /etc/os-release
         sudo apt-get update
         sudo apt-get install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
 
         if ! dpkg -s packages-microsoft-prod &>/dev/null ; then
-            wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+            wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
             sudo dpkg -i packages-microsoft-prod.deb
             sudo apt-get update
             sudo apt-get install -y powershell
@@ -107,8 +108,8 @@ if [[ $machine = 'Linux' ]] ; then
             curl https://sh.rustup.rs -sSf | sh -s -- -y
         fi
     fi
-    rustup update
-    cargo install "${packagesLinuxCargo[@]}"
+    ~/.cargo/bin/rustup update
+    ~/.cargo/bin/cargo install "${packagesLinuxCargo[@]}"
 fi
 
 # ----------------------------------
