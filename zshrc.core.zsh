@@ -44,9 +44,15 @@ zinit light b4b4r07/httpstat
 source ${HOME}/.dotfiles/lib/libxnix.sh
 
 # Common Env
-export EDITOR=vim
-export GIT_EDITOR=vim
-export VISUAL=vim
+if cex nvim ; then
+    VIM_BIN=nvim
+    alias vim=nvim
+else
+    VIM_BIN=vim
+fi
+export EDITOR=$VIM_BIN
+export GIT_EDITOR=$VIM_BIN
+export VISUAL=$VIM_BIN
 
 # configure XDG Base Directory
 [ ! -e ~/.config ] && mkdir ~/.config
@@ -70,11 +76,14 @@ setopt hist_ignore_dups
 setopt EXTENDED_HISTORY
 
 # configure aliases
-cex nvim    && alias vim=nvim
 cex htop    && alias top=htop
 cex python3 && alias python=python3
 cex pip3    && alias pip=pip3
 cex fdfind  && alias fd=fdfind
+
+function start() {
+    nohup xdg-open $1 2>/dev/null &
+}
 
 # ls -> eza
 if [ -e $HOME/.cargo/env ] ; then
