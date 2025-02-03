@@ -130,7 +130,7 @@ linkNx ~/.posh-theme.json .posh-theme.json
 linkNx ~/.vimrc .vimrc
 linkNx $nvimInitDest .vimrc
 linkNx $ideavimrcDest .ideavimrc
-#linkNx ~/.tmux.conf .tmux.conf
+linkNx ~/.tmux.conf .tmux.conf
 
 task "Installing: vim-plug"
 $plugInstalled = $false

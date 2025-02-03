@@ -24,6 +24,7 @@ packagesMac=(
     fd eza
     coreutils libyaml readline libxslt libtool unixodbc gd
     libjpeg mysql-connector-c oniguruma
+    font-hackgen font-hackgen-nerd powershell/tap/powershell
 )
 # ubuntu
 packagesLinux=(
@@ -58,21 +59,11 @@ if [[ $machine = Mac ]] ; then
     # Homebrew
     if ! cex brew ; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        export PATH="/opt/homebrew/bin:$PATH"
     fi
 
     # Homebrew Packages
     brew install "${packagesCommon[@]}" "${packagesMac[@]}"
-
-    # anyenv
-    if ! cex anyenv ; then
-        brew install anyenv
-        anyenv init
-        eval "$(anyenv init -)"
-        anyenv install --init
-    fi
-
-    # powerline
-    pip3 install --user powerline-status
 
     # Screenshot behaviour
     defaults write com.apple.screencapture type jpg
@@ -122,7 +113,7 @@ if [[ ! -e $ZINIT_HOME ]] ; then
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-sudo chsh "$USER" -s "$(which zsh)"
+sudo chsh -s "$(which zsh)" "$USER" 
 
 # ----------------------------------
 # Common and PowerShell
