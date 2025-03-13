@@ -95,9 +95,8 @@ if cex eza ; then
     alias la='eza -aF'
 fi
 
-# anyenv or asdf
-cex anyenv && eval "$(anyenv init -)"
-[ -f ~/.asdf/asdf.sh ] && . ~/.asdf/asdf.sh
+#  asdf
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # path configuration
 if [ -d /opt/homebrew/bin ] ; then

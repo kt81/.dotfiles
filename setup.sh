@@ -21,7 +21,7 @@ packagesCommon=(
 )
 
 packagesMac=(
-    fd eza
+    fd eza asdf
     coreutils libyaml readline libxslt libtool unixodbc gd
     libjpeg mysql-connector-c oniguruma
     font-hackgen font-hackgen-nerd powershell/tap/powershell
@@ -126,12 +126,6 @@ cex pwsh && pwsh -NoProfile "$repoRoot/setup.core.ps1"
 if [ ! -e ~/.fzf ] ; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
-fi
-
-if ! command -v asdf > /dev/null 2>&1 ; then
-    git clone https://github.com/asdf-vm/asdf.git ~/.asdf
-    cd ~/.asdf
-    git checkout "$(git describe --abbrev=0 --tags)"
 fi
 
 if [ ! -d ~/.tmux/plugins/tpm ] ; then
