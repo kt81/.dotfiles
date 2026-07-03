@@ -8,6 +8,7 @@
 brew "zsh"
 brew "tmux"
 brew "neovim"
+brew "starship"   # cross-shell prompt (replaces powerlevel10k)
 
 # --- modern CLI ---
 brew "ripgrep"    # rg  — grep

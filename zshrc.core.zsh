@@ -4,12 +4,6 @@
 # (nvm, fzf, ...) append to ~/.zshrc without ever touching this repo.
 #
 
-# Enable Powerlevel10k instant prompt. Must stay near the top; nothing above
-# it may print to the console or read input. (~/.zshrc sources this file first.)
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # ----------------------------------
 # Plugin manager (zinit)
 # ----------------------------------
@@ -21,9 +15,6 @@ autoload -Uz _zinit
 # ----------------------------------
 # Plugins
 # ----------------------------------
-# Powerlevel10k prompt — configure via `p10k configure`.
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-
 # Friendly bindings for zsh's vi mode.
 zinit light softmoth/zsh-vim-mode
 
@@ -126,8 +117,9 @@ cex mise && eval "$(mise activate zsh)"
 # zoxide (smart cd; replaces zsh-z) — provides `z` / `zi`
 cex zoxide && eval "$(zoxide init zsh)"
 
-# prompt (Powerlevel10k) — customize via `p10k configure`
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# prompt: starship (config tracked at ~/.dotfiles/starship.toml)
+export STARSHIP_CONFIG="$HOME/.dotfiles/starship.toml"
+cex starship && eval "$(starship init zsh)"
 
 # fzf integration (keybindings + completion)
 if cex fzf && fzf --zsh &>/dev/null; then

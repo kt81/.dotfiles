@@ -1,0 +1,18 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Mostly starship's lean, contextual defaults (dir, git, and language versions
+# shown only when relevant — the active node/ruby/... comes from mise). Tweaks only.
+add_newline = true
+command_timeout = 1000
+right_format = '$time'        # clock on the right, like the old p10k
+
+[time]
+disabled = false
+time_format = '%H:%M'
+style = 'dimmed white'
+
+[kubernetes]
+disabled = false              # show context when you're in one (hidden by default)
+
+[aws]
+format = '[$symbol($profile )($region )]($style)'
