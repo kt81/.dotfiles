@@ -113,9 +113,6 @@ if cex eza ; then
     alias la='eza -aF'
 fi
 
-#  asdf
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
 # path configuration
 if [ -d /opt/homebrew/bin ] ; then
     export PATH="/opt/homebrew/bin:$PATH"
@@ -123,6 +120,9 @@ fi
 if [ -d ~/.local/bin ] ; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
+
+# mise (runtime version manager; replaces asdf + nvm) — needs Homebrew on PATH first
+cex mise && eval "$(mise activate zsh)"
 
 # zoxide (smart cd; replaces zsh-z) — provides `z` / `zi`
 cex zoxide && eval "$(zoxide init zsh)"

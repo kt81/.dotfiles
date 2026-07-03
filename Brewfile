@@ -38,7 +38,7 @@ brew "unzip"
 brew "bash"
 
 # --- runtime / task ---
-brew "asdf"       # runtime version manager (mise migration = Phase 2)
+brew "mise"       # runtime version manager (node/python/ruby/...) — replaces asdf + nvm
 brew "go-task"    # Taskfile runner
 brew "pstree"
 
