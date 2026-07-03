@@ -21,25 +21,14 @@ autoload -Uz _zinit
 # ----------------------------------
 # Plugins
 # ----------------------------------
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
-
-# Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
+# Powerlevel10k prompt — configure via `p10k configure`.
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-# (directory jumping handled by zoxide — see `zoxide init` near the bottom)
-# Friendly bindings for ZSH's vi mode.
-zinit light softmoth/zsh-vim-mode
-# (fzf keybindings come from `fzf --zsh` near the bottom, not a zinit pack —
-#  the pack builds fzf from source and needs Go, which broke first-run setup)
-# Sets general shell options and defines environment variables.
-zinit snippet PZTM::environment
 
-# fast-syntax-highlighting: Feature-rich syntax highlighting for ZSH
-# zsh-completions: Additional completion definitions for Zsh.
-# zsh-autosuggentions: Fish-like autosuggestions for zsh
+# Friendly bindings for zsh's vi mode.
+zinit light softmoth/zsh-vim-mode
+
+# Deferred (turbo): syntax highlighting, extra completions, autosuggestions.
+# `zicompinit` here runs compinit once — no separate compinit elsewhere.
 zinit wait lucid for \
  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
     zdharma-continuum/fast-syntax-highlighting \
@@ -47,13 +36,18 @@ zinit wait lucid for \
     zsh-users/zsh-completions \
  atload"!_zsh_autosuggest_start" \
     zsh-users/zsh-autosuggestions
-# provides additional completions from the zsh-completions project.
-zinit snippet PZTM::completion
 
-#zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
-#zinit light zsh-users/zsh-syntax-highlighting
-zinit ice as:program cp:"httpstat.sh -> httpstat" pick:httpstat
-zinit light b4b4r07/httpstat
+# directory jumping -> zoxide, fzf keybindings -> `fzf --zsh` (both near the bottom)
+
+# completion behaviour (replaces Prezto's completion module; compinit runs above)
+[[ -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh" ]] || mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' menu select
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:descriptions' format '%F{yellow}%B%d%b%f'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
 
 # ----------------------------------
 # etc
@@ -79,11 +73,16 @@ export XDG_CONFIG_HOME=~/.config
 # Locale
 export LC_ALL='en_US.UTF-8'
 
-# Common Options
+# Common Options (a few sane defaults formerly pulled from Prezto's environment module)
 setopt NO_BEEP
 setopt autocd
 setopt autopushd pushdminus pushdsilent pushdtohome pushdignoredups
 setopt automenu
+setopt INTERACTIVE_COMMENTS   # allow `#` comments at the interactive prompt
+setopt COMBINING_CHARS        # combine accents with the base character
+setopt RC_QUOTES              # '' means a literal ' inside single quotes
+setopt LONG_LIST_JOBS         # verbose job list
+unsetopt HUP                  # don't SIGHUP background jobs when the shell exits
 bindkey -v
 
 # History
