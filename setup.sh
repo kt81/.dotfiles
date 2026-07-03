@@ -73,7 +73,7 @@ fi
 # ----------------------------------
 
 if [[ $machine = 'Linux' ]] ; then
-    read -p "Are you sure you want to install System Packages? Please input N to skip if you are on SHARED SERVER. (y/N): " -n 1 -r inst
+    read -p "Install system packages? Enter N to skip if you're on a shared server. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
         source /etc/os-release

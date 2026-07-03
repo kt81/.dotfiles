@@ -85,14 +85,14 @@ function linkNx {
 # ====================================================================
 
 if ($IsWindows) {
-    # Admin privilege is required in Windows to create symlinks (if not in dev mode)
+    # Admin privileges are required on Windows to create symlinks (unless Developer Mode is enabled)
     $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Error "Please run this script as Admin." -Category PermissionDenied
         Exit 1
     }
 
-    Write-Host -ForegroundColor Green 'Enabling windows feature: Japanese Fonts'
+    Write-Host -ForegroundColor Green 'Enabling Windows feature: Japanese Fonts'
     doTested {!(DISM.exe /Online /Get-CapabilityInfo /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0 | Select-String -Pattern "インストール済み|Installed")} {
         DISM.exe /Online /Add-Capability /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0
     }

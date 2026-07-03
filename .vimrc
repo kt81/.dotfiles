@@ -145,8 +145,8 @@ augroup my-glyph-palette
   autocmd FileType fern call glyph_palette#apply()
 augroup END
 
-" <<< vim-markdown (via vim-plyglot) >>>
-" I really don't want to set them up individually, but it's just too inconvenient.
+" <<< vim-markdown (via vim-polyglot) >>>
+" Configuring these per-file would be tedious, so set them globally.
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_markdown_fenced_languages = ['csharp=cs', 'shell=sh']

@@ -23,7 +23,7 @@ if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop 
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-    # to make `refreshenv` works immediately
+    # to make `refreshenv` work immediately
     $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).path)\..\.."
     Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 }
