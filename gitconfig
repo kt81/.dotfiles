@@ -1,0 +1,36 @@
+# Managed git configuration (tracked by dotfiles).
+#
+# ~/.gitconfig is a LOCAL file that `[include]`s this one and holds personal
+# identity / credentials, so `git config --global ...` and tools like
+# `gh auth setup-git` write to ~/.gitconfig without ever dirtying this repo.
+
+[init]
+	defaultBranch = main
+[color]
+	ui = auto
+[push]
+	default = simple
+[pull]
+	rebase = false
+[core]
+	autocrlf = input
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	light = false
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	colorMoved = default
+[alias]
+	co = checkout
+	sw = switch
+	re = restore
+	ci = commit
+	st = status
+	br = branch
+	kfetch = fetch --all --prune
+	brmd = "!f() { git branch --merged | grep -vE '^[* ]*(main|master)$' | xargs -I% git branch -d %; }; f"
+	kup = "!f() { b=${1:-main}; git fetch --all --prune && git switch \"$b\" && git merge --ff-only \"upstream/$b\" && git push origin \"$b\"; }; f"

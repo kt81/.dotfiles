@@ -1,5 +1,5 @@
 $tmpFile = "dotrile-tmp.zip"
-$expectedPath = ".dotfiles-master"
+$expectedPath = ".dotfiles-main"
 
 # see https://zenn.dev/awtnb/articles/72762324b9fda6
 function Use-TempDir {
@@ -16,7 +16,7 @@ function Use-TempDir {
 }
 
 Use-TempDir {
-    Invoke-WebRequest https://github.com/kt81/.dotfiles/archive/refs/heads/master.zip -OutFile $tmpFile
+    Invoke-WebRequest https://github.com/kt81/.dotfiles/archive/refs/heads/main.zip -OutFile $tmpFile
     Expand-Archive $tmpFile .
     cd $expectedPath
 

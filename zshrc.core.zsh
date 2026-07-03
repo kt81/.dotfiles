@@ -1,3 +1,23 @@
+#
+# Core zsh configuration (tracked by dotfiles).
+# Sourced from the local, untracked ~/.zshrc so that tool installers
+# (nvm, fzf, ...) append to ~/.zshrc without ever touching this repo.
+#
+
+# Enable Powerlevel10k instant prompt. Must stay near the top; nothing above
+# it may print to the console or read input. (~/.zshrc sources this file first.)
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# ----------------------------------
+# Plugin manager (zinit)
+# ----------------------------------
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+source "${ZINIT_HOME}/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
 # ----------------------------------
 # Plugins
 # ----------------------------------
@@ -9,13 +29,11 @@ zinit light-mode for \
 
 # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-# Jump quickly to directories that you have visited "frecently."
-# A native Zsh port of z.sh with added features.
-zinit light agkozak/zsh-z
+# (directory jumping handled by zoxide — see `zoxide init` near the bottom)
 # Friendly bindings for ZSH's vi mode.
 zinit light softmoth/zsh-vim-mode
-# fzf extension
-zinit pack"default+keys" for fzf
+# (fzf keybindings come from `fzf --zsh` near the bottom, not a zinit pack —
+#  the pack builds fzf from source and needs Go, which broke first-run setup)
 # Sets general shell options and defines environment variables.
 zinit snippet PZTM::environment
 
@@ -106,12 +124,21 @@ if [ -d ~/.local/bin ] ; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# local configuration
-if [ -f ~/.zshrc.local ] ; then
-    source ~/.zshrc.local
-else
-    touch ~/.zshrc.local
+# zoxide (smart cd; replaces zsh-z) — provides `z` / `zi`
+cex zoxide && eval "$(zoxide init zsh)"
+
+# prompt (Powerlevel10k) — customize via `p10k configure`
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# fzf integration (keybindings + completion)
+if cex fzf && fzf --zsh &>/dev/null; then
+    eval "$(fzf --zsh)"          # modern (fzf >= 0.48, e.g. Homebrew)
+elif [ -f ~/.fzf.zsh ]; then
+    source ~/.fzf.zsh            # legacy fallback (git-install)
 fi
+
+# Machine-specific settings & tool-installer output live in ~/.zshrc
+# (the local file that sources this one), not here.
 
 # keychain
 if cex keychain && [ -f $HOME/.ssh/id_rsa ]; then

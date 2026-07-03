@@ -132,6 +132,17 @@ linkNx $nvimInitDest .vimrc
 linkNx $ideavimrcDest .ideavimrc
 linkNx ~/.tmux.conf .tmux.conf
 
+# git: seed a local ~/.gitconfig that includes the managed config (declarative).
+# Personal identity / credentials stay local; never clobber an existing file.
+task "Configuring git (include managed config)"
+$gitconfig = Join-Path $HOME ".gitconfig"
+if (!(Test-Path $gitconfig)) {
+    $inc = $repoRoot -replace '\\', '/'
+    "[include]`n`tpath = $inc/gitconfig" | Out-File -FilePath $gitconfig -Encoding utf8 -NoNewline
+} else {
+    skip "~/.gitconfig exists — add '[include] path = $repoRoot/gitconfig' manually if needed."
+}
+
 task "Installing: vim-plug"
 $plugInstalled = $false
 if ($IsWindows) {

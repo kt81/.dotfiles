@@ -1,0 +1,11 @@
+# vim: et:ts=2:sw=0:sts=-1:ft=zsh
+#
+# ~/.zshrc — LOCAL, machine-specific, NOT tracked by dotfiles.
+#
+# The managed configuration lives in ~/.dotfiles/zshrc.core.zsh, sourced below.
+# Tool installers (nvm, fzf, conda, ...) and your own machine-specific tweaks
+# append here, keeping the dotfiles repo clean.
+#
+source "$HOME/.dotfiles/zshrc.core.zsh"
+
+# --- local & machine-specific settings below ---

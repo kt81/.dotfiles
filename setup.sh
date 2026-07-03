@@ -9,31 +9,27 @@ set -e
 repoRoot=$(realpath "$(dirname "$0")")
 source "${repoRoot}/lib/libxnix.sh"
 
+# Linux (apt) package lists. macOS uses the declarative Brewfile (see below).
+# PHP-from-source build deps were removed; generic build tools kept for asdf/mise.
 packagesCommon=(
     # essentials
     zsh tmux neovim
-    htop glances ripgrep 
+    htop ripgrep
     curl wget file unzip gpg jq
     # VCS
-    git git-lfs tig subversion
-    # For asdf (Build tools)
-    coreutils automake autoconf openssl libtool unixodbc bison gettext openssl pkg-config re2c 
+    git git-lfs
+    # generic build tools (asdf/mise source builds)
+    coreutils automake autoconf openssl libtool gettext pkg-config
 )
 
-packagesMac=(
-    fd eza asdf
-    coreutils libyaml readline libxslt libtool unixodbc gd
-    libjpeg mysql-connector-c oniguruma
-    font-hackgen font-hackgen-nerd powershell/tap/powershell
-)
 # ubuntu
 packagesLinux=(
     fd-find apt-transport-https software-properties-common
-    build-essential libyaml-dev libxslt-dev libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev 
-    libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev zlib1g-dev
+    # runtime (ruby/python) source-build deps
+    build-essential libssl-dev zlib1g-dev libyaml-dev libsqlite3-dev libreadline-dev
 )
 packagesLinuxCargo=(
-    eza git-delta
+    eza git-delta bat zoxide
 )
 
 # ----------------------------------
@@ -62,8 +58,9 @@ if [[ $machine = Mac ]] ; then
         export PATH="/opt/homebrew/bin:$PATH"
     fi
 
-    # Homebrew Packages
-    brew install "${packagesCommon[@]}" "${packagesMac[@]}"
+    # Homebrew packages (declarative — see Brewfile / Brewfile.local)
+    brew bundle --file="${repoRoot}/Brewfile"
+    [ -f "${repoRoot}/Brewfile.local" ] && brew bundle --file="${repoRoot}/Brewfile.local"
 
     # Screenshot behaviour
     defaults write com.apple.screencapture type jpg
@@ -106,7 +103,10 @@ fi
 # ----------------------------------
 # ZSH
 # ----------------------------------
-[ -e ~/.zshrc ] || ln -s "$repoRoot/.zshrc" ~/.zshrc
+# ~/.zshrc is a LOCAL file (a copy, not a symlink) so that tool installers and
+# machine-specific tweaks land there instead of dirtying this repo. It just
+# sources the tracked core config. Only seed it once; never clobber a local one.
+[ -e ~/.zshrc ] || cp "$repoRoot/zshrc.template" ~/.zshrc
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -e $ZINIT_HOME ]] ; then
     mkdir -p "$(dirname "$ZINIT_HOME")"
@@ -123,9 +123,11 @@ cex pwsh && pwsh -NoProfile "$repoRoot/setup.core.ps1"
 # ----------------------------------
 # Common over *NIX Platforms
 # ----------------------------------
-if [ ! -e ~/.fzf ] ; then
+# fzf: macOS gets it from the Brewfile; other platforms fall back to git-install
+# (with keybindings/completion enabled).
+if [ "$machine" != Mac ] && [ ! -e ~/.fzf ] ; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    ~/.fzf/install --key-bindings --completion --no-update-rc
 fi
 
 if [ ! -d ~/.tmux/plugins/tpm ] ; then
@@ -138,7 +140,12 @@ else
     popd
 fi
 
-"$repoRoot/git.sh"
+# git: seed a local ~/.gitconfig that includes the managed config (declarative).
+# Personal identity / credentials and any `git config --global` writes stay local.
+if [ ! -e ~/.gitconfig ] ; then
+    printf '[include]\n\tpath = %s/gitconfig\n' "$repoRoot" > ~/.gitconfig
+fi
+
 zsh
 
 # vim: et:ts=4:sw=4:ft=bash

@@ -1,1 +1,7 @@
 *~
+
+# ~/.zshrc is a local, per-machine file (seeded from zshrc.template); never track it.
+/.zshrc
+
+# Machine-specific Homebrew extras (stack + personal apps); tracked base is Brewfile.
+/Brewfile.local

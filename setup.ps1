@@ -58,5 +58,4 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
     $pwsh = "pwsh"
 }
 
-& $pwsh $repoRoot\git.ps1 
 & $pwsh $repoRoot\setup.core.ps1
