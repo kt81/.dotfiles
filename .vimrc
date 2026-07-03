@@ -9,8 +9,8 @@ call plug#begin()
 
 " A collection of language packs for Vim.
 Plug 'sheerun/vim-polyglot'
-" A dark colour scheme for Vim.
-Plug 'w0ng/vim-hybrid'
+" 🎨 Modern colour scheme (dark). Swap: catppuccin/nvim, sainnhe/gruvbox-material, rebelot/kanagawa.nvim
+Plug 'folke/tokyonight.nvim'
 " A simple, easy-to-use Vim alignment plugin. (gaip*|, vipga)
 Plug 'junegunn/vim-easy-align'
 " Lean & mean status/tabline for vim that's light as air.
@@ -22,10 +22,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 " Check syntax in Vim asynchronously and fix files, with Language Server Protocol (LSP) support.
 Plug 'dense-analysis/ale'
-" A vim plugin to display the indention levels with thin vertical lines.
-Plug 'yggdroot/indentline'
-" 🌸 fzf ❤️ vim
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" 🌸 fzf ❤️ vim (fzf binary comes from Homebrew — no build step)
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 " ➕ Show a diff using Vim its sign column.
 if has('nvim') || has('patch-8.0.902')
@@ -40,8 +38,6 @@ Plug 'lambdalisue/fern-renderer-nerdfont.vim'
 Plug 'lambdalisue/fern-git-status.vim'
 " 🎨 An universal palette for Nerd Fonts
 Plug 'lambdalisue/glyph-palette.vim'
-" 🔗 The fancy start screen for Vim.
-Plug 'mhinz/vim-startify'
 
 call plug#end()
 "/vim plug ---------------
@@ -82,8 +78,6 @@ set cindent
 set showmatch
 set backspace=indent,eol,start
 set clipboard=unnamed
-set pastetoggle=<F6>
-set guioptions+=a
 
 "list settings
 set list
@@ -126,14 +120,9 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#hunks#enabled = 1
 let g:airline#extensions#branch#enabled = 1
 
-" <<< hybrid >>>
+" <<< tokyonight >>>  (variants: -night / -storm / -moon / -day)
 set background=dark
-if has('nvim')
-  let g:hybrid_custom_term_colors = 1
-endif
-" let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
-colorscheme hybrid
-"highlight LineNr ctermfg=gray
+silent! colorscheme tokyonight-moon
 
 " <<< EasyAlign >>>
 xmap ga <Plug>(EasyAlign)
@@ -153,7 +142,7 @@ let g:fern#renderer = "nerdfont"
 " <<< glyph-palette >>>
 augroup my-glyph-palette
   autocmd! *
-  autocmd FileType fern,startify call glyph_palette#apply()
+  autocmd FileType fern call glyph_palette#apply()
 augroup END
 
 " <<< vim-markdown (via vim-plyglot) >>>
