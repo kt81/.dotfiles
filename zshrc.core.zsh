@@ -128,6 +128,11 @@ elif [ -f ~/.fzf.zsh ]; then
     source ~/.fzf.zsh            # legacy fallback (git-install)
 fi
 
+# atuin: SQLite-backed shell history (Ctrl-R). Init LAST so it owns Ctrl-R;
+# fzf keeps Ctrl-T / Alt-C. Sync stays off (local only). Up-arrow left to zsh.
+export ATUIN_CONFIG_DIR="$HOME/.dotfiles/atuin"
+cex atuin && eval "$(atuin init zsh --disable-up-arrow)"
+
 # Machine-specific settings & tool-installer output live in ~/.zshrc
 # (the local file that sources this one), not here.
 

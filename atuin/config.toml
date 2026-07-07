@@ -1,0 +1,21 @@
+# atuin — SQLite-backed shell history. Tracked config; the history DB lives
+# separately in ~/.local/share/atuin and is NOT part of this repo.
+
+## Local only — no account, no server, no cross-machine sync.
+auto_sync = false
+update_check = false
+
+## Search UI — dense, but inline (never takes over the whole screen)
+style = "compact"           # inline overlay at the prompt, not full-screen
+inline_height = 30          # tall overlay (lines) but still leaves screen above
+show_preview = true         # command preview pane
+max_preview_height = 9      # roomy preview
+show_help = true            # keybinding help row
+show_tabs = true            # filter-mode tabs across the top
+search_mode = "fuzzy"
+filter_mode = "global"                 # search across all history by default
+filter_mode_shell_up_key_binding = "session"  # (up-arrow is disabled in init anyway)
+
+## Colorful theme (matches the tokyonight-moon palette used by nvim / starship)
+[theme]
+name = "tokyonight-moon"

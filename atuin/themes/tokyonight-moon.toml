@@ -1,0 +1,13 @@
+# atuin theme — tokyonight-moon palette (matches nvim & starship)
+[theme]
+name = "tokyonight-moon"
+
+[colors]
+Base = "#c8d3f5"        # normal text (moon fg)
+Title = "#82aaff"       # titles / headings (blue)
+Important = "#ffc777"   # highlights (yellow)
+Annotation = "#7a88cf"  # dim secondary text
+Guidance = "#86e1fc"    # help / hints (cyan)
+AlertInfo = "#c3e88d"   # info (green)
+AlertWarn = "#ff966c"   # warnings (orange)
+AlertError = "#ff757f"  # errors (red)

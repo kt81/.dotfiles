@@ -18,6 +18,7 @@ brew "bat"        #     — cat + syntax highlight
 brew "git-delta"  # delta — git diff pager
 brew "fzf"        #     — fuzzy finder
 brew "zoxide"     #     — smart cd (successor to zsh-z)
+brew "atuin"      #     — SQLite-backed shell history (Ctrl-R), local-only
 brew "jq"
 
 # --- VCS ---
