@@ -140,10 +140,13 @@ else
     popd
 fi
 
-# git: seed a local ~/.gitconfig that includes the managed config (declarative).
+# git: make the local ~/.gitconfig include the managed config (declarative).
 # Personal identity / credentials and any `git config --global` writes stay local.
-if [ ! -e ~/.gitconfig ] ; then
-    printf '[include]\n\tpath = %s/gitconfig\n' "$repoRoot" > ~/.gitconfig
+# Append the [include] if missing (creating the file if needed); appended last so
+# the managed settings win over any legacy local duplicates.
+incPath="$repoRoot/gitconfig"
+if ! grep -qF "$incPath" ~/.gitconfig 2>/dev/null ; then
+    printf '\n[include]\n\tpath = %s\n' "$incPath" >> ~/.gitconfig
 fi
 
 zsh

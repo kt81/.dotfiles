@@ -185,14 +185,17 @@ if ($IsWindows) {
     }
 }
 
-# ---- git: seed a local ~/.gitconfig that includes the managed config ----
+# ---- git: make the local ~/.gitconfig include the managed config ----
+# Append the [include] if it isn't there yet (creating the file if needed).
+# Appended last so the managed settings win over any legacy local duplicates.
 task "Configuring git (include managed config)"
 $gitconfig = Join-Path $HOME ".gitconfig"
-if (!(Test-Path $gitconfig)) {
-    $inc = $repoRoot -replace '\\', '/'
-    "[include]`n`tpath = $inc/gitconfig" | Out-File -FilePath $gitconfig -Encoding utf8 -NoNewline
+$inc = ($repoRoot -replace '\\', '/') + "/gitconfig"
+if ((Test-Path $gitconfig) -and ((Get-Content $gitconfig -Raw) -match [regex]::Escape($inc))) {
+    skip "~/.gitconfig already includes the managed config."
 } else {
-    skip "~/.gitconfig exists — add '[include] path = $repoRoot/gitconfig' manually if needed."
+    "`n[include]`n`tpath = $inc" | Add-Content -Path $gitconfig -Encoding utf8
+    task "Added [include] path = $inc to ~/.gitconfig"
 }
 
 # ---- mise: install the tools declared in the tracked conf.d drop-in (keifu, ...) ----
