@@ -1,0 +1,42 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "Sources": [
+    {
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      },
+      "Packages": [
+        { "PackageIdentifier": "Git.Git" },
+        { "PackageIdentifier": "GitHub.GitLFS" },
+        { "PackageIdentifier": "GitHub.cli" },
+        { "PackageIdentifier": "Microsoft.PowerShell" },
+        { "PackageIdentifier": "Microsoft.WindowsTerminal" },
+        { "PackageIdentifier": "Microsoft.VisualStudioCode" },
+        { "PackageIdentifier": "Microsoft.DotNet.SDK.10" },
+        { "PackageIdentifier": "JetBrains.Toolbox" },
+        { "PackageIdentifier": "M2Team.NanaZip" },
+        { "PackageIdentifier": "gerardog.gsudo" },
+
+        { "PackageIdentifier": "Neovim.Neovim" },
+        { "PackageIdentifier": "Starship.Starship" },
+        { "PackageIdentifier": "ajeetdsouza.zoxide" },
+        { "PackageIdentifier": "Atuinsh.Atuin" },
+        { "PackageIdentifier": "jdx.mise" },
+        { "PackageIdentifier": "dandavison.delta" },
+        { "PackageIdentifier": "eza-community.eza" },
+        { "PackageIdentifier": "sharkdp.bat" },
+        { "PackageIdentifier": "sharkdp.fd" },
+        { "PackageIdentifier": "BurntSushi.ripgrep.MSVC" },
+        { "PackageIdentifier": "junegunn.fzf" },
+        { "PackageIdentifier": "jqlang.jq" },
+        { "PackageIdentifier": "Clement.bottom" },
+        { "PackageIdentifier": "koalaman.shellcheck" },
+        { "PackageIdentifier": "ezwinports.make" }
+      ]
+    }
+  ],
+  "WinGetVersion": "1.11.400"
+}

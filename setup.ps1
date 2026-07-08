@@ -1,61 +1,48 @@
-# for windows (PowerShell 5.1 <=)
+# Windows software installer (entry point). Runs under Windows PowerShell 5.1
+# or PowerShell 7. No admin required for the script itself: packages install
+# via winget (which self-elevates per package as needed), and the symlinks in
+# setup.core.ps1 rely on Developer Mode instead of an elevated shell.
+#
+# Declarative package set lives in windows/winget.json (edit that, not this file).
+# Chocolatey is no longer used; winget covers apps + modern CLI, and HackGen
+# Nerd Font is installed from its GitHub release in setup.core.ps1.
 
 $repoRoot = $PSScriptRoot
 
-. "$repoRoot/lib/libsetup.ps1"
-
 if ($IsLinux -or $IsMacOS) {
-    # There's no $IsWindows definition on old PowerShell
-    Write-Error "This script should be run on Windows only." -Category InvalidOperation
+    Write-Error "This script is for Windows only." -Category InvalidOperation
     Exit 1
 }
 
-# Check privilege
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Error "Please run this script as Admin." -Category PermissionDenied
+function Test-Cmd { param($Name) [bool](Get-Command $Name -ErrorAction SilentlyContinue) }
+
+function Update-SessionPath {
+    $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                [Environment]::GetEnvironmentVariable('Path', 'User')
+}
+
+# ------------------------------------------------------------------
+# winget (App Installer ships with Windows 10 2004+/11)
+# ------------------------------------------------------------------
+if (-not (Test-Cmd winget)) {
+    Write-Error "winget not found. Install 'App Installer' from the Microsoft Store, then re-run." -Category NotInstalled
     Exit 1
 }
 
-if (!(Get-Command choco -ErrorAction SilentlyContinue) -and !(Get-Command scoop -ErrorAction SilentlyContinue)) {
-    # prefer chocolatey
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Write-Host "Installing packages from windows/winget.json ..." -ForegroundColor Green
+winget import --import-file "$repoRoot\windows\winget.json" `
+    --accept-package-agreements --accept-source-agreements `
+    --ignore-versions --ignore-unavailable --no-upgrade
+Update-SessionPath
 
-    # to make `refreshenv` work immediately
-    $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).path)\..\.."
-    Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+# ------------------------------------------------------------------
+# Hand off to the pwsh 7 configuration script (installed above if it was missing)
+# ------------------------------------------------------------------
+$pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+if ($pwshCmd) { $pwsh = $pwshCmd.Source } else { $pwsh = "$env:ProgramFiles\PowerShell\7\pwsh.exe" }
+if (-not (Test-Path $pwsh)) {
+    Write-Error "PowerShell 7 (pwsh) was not found after install. Open a new terminal and run setup.core.ps1 manually." -Category NotInstalled
+    Exit 1
 }
 
-# Winget Packages 
-#winget upgrade "App Installer" -s msstore --accept-package-agreements
-Upstall-WingetPackage 9NBLGGH4NNS1 # App Installer
-Upstall-WingetPackage Git.Git
-Upstall-WingetPackage GitHub.GitLFS
-Upstall-WingetPackage Microsoft.WindowsTerminal
-Upstall-WingetPackage Microsoft.VisualStudioCode
-Upstall-WingetPackage M2Team.NanaZip
-Upstall-WingetPackage JetBrains.Toolbox
-
-# Chocolatey Packages
-if (Get-Command choco -ErrorAction SilentlyContinue) {
-    # Essentials
-    choco install -y dotnet-sdk pwsh gsudo openssh make netcat
-    # Util
-    choco install -y `
-        ctrl2cap fd fzf ripgrep ntop.portable bottom jq `
-        shellcheck `
-        font-hackgen font-hackgen-nerd
-    # Pre packages
-    choco install -y --pre neovim
-
-    refreshenv
-
-    $pwsh = "C:\Program Files\PowerShell\7\pwsh.exe"
-} else {
-    # Pray that pwsh exists in the PATH
-    $pwsh = "pwsh"
-}
-
-& $pwsh $repoRoot\setup.core.ps1
+& $pwsh -NoProfile "$repoRoot\setup.core.ps1"

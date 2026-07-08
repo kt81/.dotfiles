@@ -1,0 +1,9 @@
+# Tracked mise config (dotfiles). Symlinked into ~/.config/mise/conf.d/ as a
+# drop-in, so `mise use -g ...` keeps writing to the machine-local
+# ~/.config/mise/config.toml without ever dirtying this repo.
+#
+# Per-project runtimes still come from each project's .mise.toml / .tool-versions.
+
+[tools]
+# keifu — a colorful TUI for navigating git commit graphs (log viewing).
+"github:trasta298/keifu" = "latest"

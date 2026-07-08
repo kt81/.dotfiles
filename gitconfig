@@ -8,10 +8,17 @@
 	defaultBranch = main
 [color]
 	ui = auto
+[column]
+	ui = auto
 [push]
 	default = simple
+	autoSetupRemote = true    # `git push` on a new branch just works
+	followTags = true
 [pull]
 	rebase = false
+[fetch]
+	prune = true              # drop local refs for branches deleted upstream
+	pruneTags = true
 [core]
 	autocrlf = input
 	pager = delta
@@ -20,10 +27,24 @@
 [delta]
 	navigate = true
 	light = false
+[rebase]
+	autosquash = true
+	autostash = true          # stash/pop dirty tree around a rebase
+	updateRefs = true
+[rerere]
+	enabled = true            # remember & replay conflict resolutions
 [merge]
 	conflictstyle = zdiff3
 [diff]
 	colorMoved = default
+	algorithm = histogram
+	mnemonicPrefix = true
+[branch]
+	sort = -committerdate     # `git branch` lists most-recent first
+[tag]
+	sort = version:refname
+[help]
+	autocorrect = prompt
 [alias]
 	co = checkout
 	sw = switch

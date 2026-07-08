@@ -17,7 +17,7 @@ packagesCommon=(
     htop ripgrep
     curl wget file unzip gpg jq
     # VCS
-    git git-lfs
+    git git-lfs tig
     # generic build tools (asdf/mise source builds)
     coreutils automake autoconf openssl libtool gettext pkg-config
 )

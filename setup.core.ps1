@@ -1,139 +1,191 @@
 #!/usr/bin/env pwsh
 #requires -PSEdition Core
-# Only works on PowerShell 7.x or above
+# Configuration step (PowerShell 7+). Installs PS modules, a Nerd Font, and the
+# symlinks that wire the tracked configs into place. Package installation lives
+# in setup.ps1 (Windows) / setup.sh (macOS/Linux); this file only configures.
+#
+# No elevated shell required: symlinks use Developer Mode (Windows), and the
+# font installs per-user. Only the optional Japanese system-font capability
+# needs admin, and it is skipped with a note when the shell is not elevated.
 
 $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 $ErrorActionPreference = "Stop"
 
 # ====================================================================
-#
 # Settings and Utilities
-#
 # ====================================================================
 
 $repoRoot = $PSScriptRoot
-$linuxXdgData = ([string]::IsNullOrEmpty($env:XDG_DATA_HOME) ? "$HOME/.local/share" : $env:XDG_DATA_HOME);
-$linuxXdgConfig = ([string]::IsNullOrEmpty($env:XDG_CONFIG_HOME) ? "$HOME/.config" : $env:XDG_CONFIG_HOME);
+$linuxXdgData   = [string]::IsNullOrEmpty($env:XDG_DATA_HOME)   ? "$HOME/.local/share" : $env:XDG_DATA_HOME
+$linuxXdgConfig = [string]::IsNullOrEmpty($env:XDG_CONFIG_HOME) ? "$HOME/.config"      : $env:XDG_CONFIG_HOME
 
-function task {
-    param($message)
-    Write-Host -ForegroundColor Green "$message"
-}
-function skip {
-    param($message)
-    Write-Host -ForegroundColor DarkGray "$message"
+function task { param($message) Write-Host -ForegroundColor Green    $message }
+function skip { param($message) Write-Host -ForegroundColor DarkGray $message }
+function Test-Cmd { param($Name) [bool](Get-Command $Name -ErrorAction SilentlyContinue) }
+
+function Test-Admin {
+    $p = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-function doTested {
-    param(
-        [scriptblock] $TestScript,
-        [scriptblock] $DoScript,
-        [string] $SkippedResultMessage = "Skipped.",
-        [scriptblock] $ElseScript = $null
-    )
-    $result = ($TestScript.Invoke()) -and ($DoScript.Invoke())
-    if ($result) {
-        Return $result
-    } elseif ($ElseScript -ne $null) {
-        Return ($ElseScript.Invoke())
+# Install (or update) a PowerShell module, preferring the modern PSResourceGet
+# (bundled with pwsh 7.4+) and falling back to PowerShellGet v2.
+function Install-Module2 {
+    param([Parameter(Mandatory)][string] $Name)
+    if (Test-Cmd Install-PSResource) {
+        if (Get-Module -ListAvailable $Name) {
+            task "Updating module: $Name"
+            Update-PSResource -Name $Name -Scope CurrentUser -ErrorAction SilentlyContinue
+        } else {
+            task "Installing module: $Name"
+            Install-PSResource -Name $Name -Scope CurrentUser -TrustRepository
+        }
     } else {
-        skip $SkippedResultMessage
+        if (Get-Module -ListAvailable $Name) {
+            task "Updating module: $Name"; Update-Module $Name -Scope CurrentUser
+        } else {
+            task "Installing module: $Name"; Install-Module $Name -Scope CurrentUser -Force
+        }
     }
 }
-function installOrUpdateModule {
-    param(
-        [parameter(mandatory=$true)]
-        [string] $Target,
-        [switch] $Force = $false
-    )
-    if ($Force -or !(Get-Module -ListAvailable $Target)) {
-        $cmd = "Install-Module $Target -Scope CurrentUser -Force"
-    } else {
-        $cmd = "Update-Module $Target -Scope CurrentUser"
-    }
-    Write-Host $cmd
-    Invoke-Expression $cmd
-}
+
+# Symlink a file. Never clobbers an existing real file (skips instead), so a
+# user's own config is safe.
 function linkNx {
     param(
         [string] $DestinationPath,
         [string] $FromPath,
-        [string] $SkippedResultMessage = "File exists.",
-        [bool] $NoDirCreation = $false,
-        [bool] $IsFullPath = $false
+        [bool]   $IsFullPath = $false
     )
-    if (!$IsFullPath) {
-        $FromPath = Join-Path $repoRoot $FromPath
-    }
+    if (!$IsFullPath) { $FromPath = Join-Path $repoRoot $FromPath }
     task "Linking: $FromPath -> $DestinationPath"
+    if (Test-Path $DestinationPath) { skip "Exists — leaving as-is."; return }
     $destDir = Split-Path $DestinationPath
-    $name = Split-Path -Leaf $DestinationPath
-    if (!$NoDirCreation -and !(Test-Path $destDir)) {
-        New-Item -ItemType Directory $destDir
+    if ($destDir -and !(Test-Path $destDir)) { New-Item -ItemType Directory $destDir | Out-Null }
+    New-Item -ItemType SymbolicLink -Path $DestinationPath -Target $FromPath | Out-Null
+    Write-Host -ForegroundColor Blue "Link created."
+}
+
+# Symlink a directory (or replace a file), backing up anything already there
+# that is not already our symlink. Used where we intentionally take ownership.
+function linkForce {
+    param([string] $DestinationPath, [string] $FromPath, [bool] $IsFullPath = $false)
+    if (!$IsFullPath) { $FromPath = Join-Path $repoRoot $FromPath }
+    task "Linking: $FromPath -> $DestinationPath"
+    if (Test-Path $DestinationPath) {
+        $item = Get-Item $DestinationPath -Force
+        if ($item.LinkType -eq 'SymbolicLink') { skip "Symlink exists."; return }
+        $bak = "$DestinationPath.bak-$(Get-Date -Format yyyyMMddHHmmss)"
+        task "Backing up existing target -> $bak"
+        Move-Item -LiteralPath $DestinationPath -Destination $bak
     }
-    
-    $result = doTested {!(Test-Path $DestinationPath)} {New-Item -ItemType SymbolicLink -Path $destDir -Name $name -Target $FromPath }
-    if ($result) {
-        Write-Host -ForegroundColor Blue "Link created."
+    $destDir = Split-Path $DestinationPath
+    if ($destDir -and !(Test-Path $destDir)) { New-Item -ItemType Directory $destDir | Out-Null }
+    New-Item -ItemType SymbolicLink -Path $DestinationPath -Target $FromPath | Out-Null
+    Write-Host -ForegroundColor Blue "Link created."
+}
+
+# Per-user install of HackGen Nerd Font from its GitHub release (no admin).
+function Install-HackGenNerdFont {
+    $userFontsKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Fonts'
+    $have = @()
+    if (Test-Path $userFontsKey) {
+        $have = (Get-ItemProperty $userFontsKey).PSObject.Properties.Name | Where-Object { $_ -match 'HackGen.*NF' }
+    }
+    if ($have) { skip "HackGen Nerd Font already installed for this user."; return }
+
+    task "Installing HackGen Nerd Font (from GitHub release)"
+    try {
+        $rel = Invoke-RestMethod 'https://api.github.com/repos/yuru7/HackGen/releases/latest' `
+            -Headers @{ 'User-Agent' = 'dotfiles' }
+        $asset = $rel.assets | Where-Object { $_.name -match 'HackGen_NF.*\.zip$' } | Select-Object -First 1
+        if (-not $asset) { skip "No HackGen_NF asset in latest release; skipping."; return }
+
+        $tmp = Join-Path $env:TEMP ([Guid]::NewGuid())
+        New-Item -ItemType Directory $tmp | Out-Null
+        $zip = Join-Path $tmp $asset.name
+        Invoke-WebRequest $asset.browser_download_url -OutFile $zip
+        Expand-Archive $zip $tmp
+
+        $fontDir = Join-Path $env:LOCALAPPDATA 'Microsoft\Windows\Fonts'
+        New-Item -ItemType Directory $fontDir -Force | Out-Null
+        Get-ChildItem $tmp -Recurse -Filter *.ttf | ForEach-Object {
+            $dest = Join-Path $fontDir $_.Name
+            Copy-Item $_.FullName $dest -Force
+            New-ItemProperty $userFontsKey -Name "$($_.BaseName) (TrueType)" -Value $dest `
+                -PropertyType String -Force | Out-Null
+        }
+        Remove-Item $tmp -Recurse -Force
+        Write-Host -ForegroundColor Blue "HackGen Nerd Font installed."
+    } catch {
+        skip "Font install skipped: $_"
     }
 }
 
 # ====================================================================
-#
 # Main
-#
 # ====================================================================
 
 if ($IsWindows) {
-    # Admin privileges are required on Windows to create symlinks (unless Developer Mode is enabled)
-    $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-    if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Error "Please run this script as Admin." -Category PermissionDenied
-        Exit 1
+    # Japanese system fonts (OS-level rendering). Needs admin; skip with a note
+    # otherwise. This is separate from the HackGen terminal font below.
+    $jpCap = Get-WindowsCapability -Online -Name 'Language.Fonts.Jpan~~~und-JPAN~0.0.1.0' -ErrorAction SilentlyContinue
+    if ($jpCap -and $jpCap.State -ne 'Installed') {
+        if (Test-Admin) {
+            task "Enabling Windows capability: Japanese fonts"
+            Add-WindowsCapability -Online -Name 'Language.Fonts.Jpan~~~und-JPAN~0.0.1.0'
+        } else {
+            skip "Japanese system fonts not installed (needs admin). Run elevated to add them."
+        }
     }
 
-    Write-Host -ForegroundColor Green 'Enabling Windows feature: Japanese Fonts'
-    doTested {!(DISM.exe /Online /Get-CapabilityInfo /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0 | Select-String -Pattern "インストール済み|Installed")} {
-        DISM.exe /Online /Add-Capability /CapabilityName:Language.Fonts.Jpan~~~und-JPAN~0.0.1.0
-    }
-
-    task "Installing: oh-my-posh"
-    doTested {!(Get-Command oh-my-posh -ErrorAction SilentlyContinue)} {
-        winget install oh-my-posh --source winget --accept-package-agreements
-    } # -ElseScript { winget upgrade oh-my-posh --accept-package-agreements }
+    Install-HackGenNerdFont
 }
 
-task "Installing: posh-git"
-installOrUpdateModule posh-git
-task "Installing: PSReadLine"
-installOrUpdateModule PSReadLine -Force
-task "Installing: PSFzf"
-installOrUpdateModule PSFzf
-task "Installing: ZLocation (z)"
-installOrUpdateModule ZLocation
+# ---- PowerShell modules ----
+# Prompt -> starship, dir jump -> zoxide, git status -> starship: posh-git and
+# ZLocation are intentionally gone. Only line-editing helpers remain.
+Install-Module2 PSReadLine
+Install-Module2 PSFzf
 
-task "Creating symbolic links for various settings."
+# ---- Symlinks ----
+# This script owns the symlinks on every OS it runs on (Windows always; unix
+# whenever pwsh is present). Ensuring pwsh exists on a given host is that host's
+# own responsibility.
+task "Creating symbolic links for tracked configs."
 $psProfile = "Microsoft.PowerShell_profile.ps1"
 if ($IsWindows) {
     $psProfileDest = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "PowerShell" $psProfile
-    $nvimInitDest = Join-Path $env:LOCALAPPDATA "/nvim/init.vim"
+    $nvimDest      = Join-Path $env:LOCALAPPDATA "nvim"
     $ideavimrcDest = "~/_ideavimrc"
+    $miseConfDest  = Join-Path $env:USERPROFILE ".config\mise\conf.d\dotfiles.toml"
 } else {
     $psProfileDest = Join-Path $linuxXdgConfig "powershell" $psProfile
-    $nvimInitDest = Join-Path $linuxXdgConfig "/nvim/init.vim"
+    $nvimDest      = Join-Path $linuxXdgConfig "nvim"
     $ideavimrcDest = "~/.ideavimrc"
+    $miseConfDest  = Join-Path $linuxXdgConfig "mise/conf.d/dotfiles.toml"
 }
-echo $ideavimrcDest
 
-linkNx $psProfileDest $psProfile
-linkNx ~/.posh-theme.json .posh-theme.json
-linkNx ~/.vimrc .vimrc
-linkNx $nvimInitDest .vimrc
-linkNx $ideavimrcDest .ideavimrc
-linkNx ~/.tmux.conf .tmux.conf
+linkNx    $psProfileDest $psProfile
+linkForce $nvimDest      "nvim"            # whole nvim config dir (lazy.nvim)
+linkNx    $ideavimrcDest .ideavimrc
+linkNx    ~/.tmux.conf   .tmux.conf
+# mise: drop-in so `mise use -g` never dirties the repo (see mise/config.toml)
+linkNx    $miseConfDest  "mise/config.toml"
 
-# git: seed a local ~/.gitconfig that includes the managed config (declarative).
-# Personal identity / credentials stay local; never clobber an existing file.
+# Windows Terminal settings (Windows only). Takes ownership; the previous file
+# is backed up next to it.
+if ($IsWindows) {
+    $wtDest = Join-Path $env:LOCALAPPDATA `
+        "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    if (Test-Path (Split-Path $wtDest)) {
+        linkForce $wtDest "windows\WindowsTerminal\settings.json"
+    } else {
+        skip "Windows Terminal not installed — skipping its settings link."
+    }
+}
+
+# ---- git: seed a local ~/.gitconfig that includes the managed config ----
 task "Configuring git (include managed config)"
 $gitconfig = Join-Path $HOME ".gitconfig"
 if (!(Test-Path $gitconfig)) {
@@ -143,29 +195,18 @@ if (!(Test-Path $gitconfig)) {
     skip "~/.gitconfig exists — add '[include] path = $repoRoot/gitconfig' manually if needed."
 }
 
-task "Installing: vim-plug"
-$plugInstalled = $false
-if ($IsWindows) {
-    $nvimAlPath = "$env:LOCALAPPDATA/nvim-data/site/autoload/plug.vim";
-    $vimAlPath = "$HOME/vimfiles/autoload/plug.vim"
-} else {
-    $nvimAlPath = $linuxXdgData + "/nvim/site/autoload/plug.vim"
-    $vimAlPath = "$HOME/.vim/autoload/plug.vim"
-}
-if (!(Test-Path $nvimAlPath)) {
-    Invoke-WebRequest -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim |`
-        New-Item $nvimAlPath -Force
-    nvim --headless +PlugInstall +qall
-    $plugInstalled = $true
-}
-if ((Get-Command vim -ErrorAction SilentlyContinue) -and !(Test-Path $vimAlPath)) {
-    New-Item -ItemType File $vimAlPath -Force
-    Copy-Item $nvimAlPath $vimAlPath -Force
-    vim +'PlugInstall --sync' +qa
-    $plugInstalled = $true
-}
-if (!$plugInstalled) {
-    skip "vim-plug has already been installed."
+# ---- mise: install the tools declared in the tracked conf.d drop-in (keifu, ...) ----
+if (Test-Cmd mise) {
+    task "Installing mise tools (mise install)"
+    try { mise install } catch { skip "mise install skipped: $_" }
 }
 
-Write-Host -ForegroundColor Yellow -Object "Done!!!"
+# ---- nvim: let lazy.nvim bootstrap itself and sync plugins ----
+if (Test-Cmd nvim) {
+    task "Syncing Neovim plugins (lazy.nvim)"
+    try { nvim --headless "+Lazy! sync" +qa } catch { skip "Plugin sync skipped: $_" }
+} else {
+    skip "nvim not on PATH yet — open nvim once to let lazy.nvim install plugins."
+}
+
+Write-Host -ForegroundColor Yellow "Done!!!"
