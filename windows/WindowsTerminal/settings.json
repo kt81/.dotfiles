@@ -113,9 +113,21 @@
             },
             {
                 "guid": "{51855cb2-8cce-5362-8f54-464b92b32386}",
-                "hidden": false,
-                "name": "Ubuntu",
+                "hidden": true,
+                "name": "Ubuntu (legacy Store profile)",
                 "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc"
+            },
+            {
+                "guid": "{570fcb8d-792c-5ac7-ab1f-5cfb2cdfdb99}",
+                "hidden": true,
+                "name": "docker-desktop",
+                "source": "Windows.Terminal.Wsl"
+            },
+            {
+                "guid": "{d8afdc0e-a636-5b68-89dd-50a9d0b54349}",
+                "hidden": true,
+                "name": "docker-desktop-data",
+                "source": "Windows.Terminal.Wsl"
             }
         ]
     },
