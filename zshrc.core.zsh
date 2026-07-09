@@ -61,8 +61,15 @@ export VISUAL=$VIM_BIN
 [ ! -e ~/.config ] && mkdir ~/.config
 export XDG_CONFIG_HOME=~/.config
 
-# Locale
-export LC_ALL='en_US.UTF-8'
+# Locale: prefer en_US.UTF-8, fall back to C.UTF-8 when it isn't generated
+# (avoids "setlocale: cannot change locale" warnings on a fresh Ubuntu/WSL).
+if locale -a 2>/dev/null | grep -qix 'en_US.utf-\?8'; then
+    export LANG='en_US.UTF-8'
+    export LC_ALL='en_US.UTF-8'
+else
+    export LANG='C.UTF-8'
+    export LC_ALL='C.UTF-8'
+fi
 
 # Common Options (a few sane defaults formerly pulled from Prezto's environment module)
 setopt NO_BEEP
@@ -132,6 +139,12 @@ fi
 # fzf keeps Ctrl-T / Alt-C. Sync stays off (local only). Up-arrow left to zsh.
 export ATUIN_CONFIG_DIR="$HOME/.dotfiles/atuin"
 cex atuin && eval "$(atuin init zsh --disable-up-arrow)"
+
+# WSL: clipboard (win32yank), Windows interop, and a trimmed PATH re-add.
+# Sourced last so its start()/PATH tweaks win. Config in zshrc.wsl.zsh.
+if [[ -n "$WSL_DISTRO_NAME" ]] && [ -f "${HOME}/.dotfiles/zshrc.wsl.zsh" ]; then
+    source "${HOME}/.dotfiles/zshrc.wsl.zsh"
+fi
 
 # Machine-specific settings & tool-installer output live in ~/.zshrc
 # (the local file that sources this one), not here.

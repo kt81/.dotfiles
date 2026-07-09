@@ -19,7 +19,9 @@ with my preferred tools and configuration.
   - macOS: Homebrew + a `Brewfile` (`brew bundle`); `Brewfile.local` for machine-specific extras
   - Windows: **winget** only, from a declarative `windows/winget.json`
     (`winget import`). Chocolatey has been retired.
-  - Linux: apt + cargo
+  - Linux: apt for system packages + **mise** for CLI tools (eza, bat, delta,
+    zoxide, starship, atuin, gh, fzf) as prebuilt binaries — no rust toolchain
+    required (install rust/cargo manually only where you build Rust)
 - Prompt is **[starship](https://starship.rs/)** everywhere — zsh *and* PowerShell
   share the one `starship.toml`
 - Sets up **zsh** via [zinit](https://github.com/zdharma-continuum/zinit); the
@@ -108,6 +110,12 @@ Notes:
 - Treesitter parsers don't auto-install on Windows (an upstream `nvim-treesitter`
   path bug). Install them on demand with `:TSInstall <lang>` — a C compiler such
   as LLVM/clang must be on `PATH`.
+- **WSL**: `setup.sh` sets `appendWindowsPath = false` in `/etc/wsl.conf` so
+  shells don't inherit the huge Windows `PATH` (command lookup / completion stay
+  fast); only the handful of Windows tools actually used are re-added in
+  `zshrc.wsl.zsh`. Clipboard routes through `win32yank` (zsh `pbcopy`/`pbpaste`,
+  tmux-yank, Neovim), and `open` / `start` use `wslview` (from `wslu`). Run
+  `wsl --shutdown` once from Windows after setup to apply the PATH change.
 
 Disclaimer
 ----------

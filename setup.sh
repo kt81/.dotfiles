@@ -28,8 +28,10 @@ packagesLinux=(
     # runtime (ruby/python) source-build deps
     build-essential libssl-dev zlib1g-dev libyaml-dev libsqlite3-dev libreadline-dev
 )
-packagesLinuxCargo=(
-    eza git-delta bat zoxide
+# Linux CLI tools come from mise (prebuilt binaries) — no rust toolchain needed.
+# rust/cargo is installed manually only on hosts where you actually build Rust.
+miseTools=(
+    eza delta bat zoxide starship atuin gh fzf
 )
 
 # ----------------------------------
@@ -80,6 +82,12 @@ if [[ $machine = 'Linux' ]] ; then
         sudo apt-get update
         sudo apt-get install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
 
+        # Generate en_US.UTF-8 so LC_ALL='en_US.UTF-8' works without warnings
+        if ! locale -a 2>/dev/null | grep -qix 'en_US.utf-\?8' ; then
+            sudo apt-get install -y locales
+            sudo locale-gen en_US.UTF-8
+        fi
+
         if ! dpkg -s packages-microsoft-prod &>/dev/null ; then
             wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
             sudo dpkg -i packages-microsoft-prod.deb
@@ -89,15 +97,29 @@ if [[ $machine = 'Linux' ]] ; then
         fi
     fi
 
-    if ! cex cargo ; then
-        if [[ -e $HOME/.cargo/env ]] ; then
-            source "$HOME/.cargo/env"
-        else
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
+    # CLI tools via mise (prebuilt binaries; no rust build). Install mise first.
+    if ! cex mise ; then
+        curl https://mise.run | sh
+    fi
+    "$HOME/.local/bin/mise" use -g "${miseTools[@]}"
+    "$HOME/.local/bin/mise" install
+
+    # ----------------------------------
+    # WSL-specific setup
+    # ----------------------------------
+    if [[ -n "$WSL_DISTRO_NAME" ]] ; then
+        # wslu provides wslview (open files/URLs with the Windows default app)
+        if ! cex wslview ; then
+            sudo apt-get install -y wslu || true
+        fi
+        # Don't import the huge Windows PATH -- keeps command lookup / completion
+        # fast. zshrc.wsl.zsh re-adds the few Windows tools we call. Needs a
+        # one-time `wsl --shutdown` from Windows to take effect.
+        if ! grep -q 'appendWindowsPath' /etc/wsl.conf 2>/dev/null ; then
+            printf '\n[interop]\nappendWindowsPath = false\n' | sudo tee -a /etc/wsl.conf >/dev/null
+            echo ">> /etc/wsl.conf updated: run 'wsl --shutdown' from Windows to apply."
         fi
     fi
-    ~/.cargo/bin/rustup update
-    ~/.cargo/bin/cargo install "${packagesLinuxCargo[@]}"
 fi
 
 # ----------------------------------
@@ -123,12 +145,8 @@ cex pwsh && pwsh -NoProfile "$repoRoot/setup.core.ps1"
 # ----------------------------------
 # Common over *NIX Platforms
 # ----------------------------------
-# fzf: macOS gets it from the Brewfile; other platforms fall back to git-install
-# (with keybindings/completion enabled).
-if [ "$machine" != Mac ] && [ ! -e ~/.fzf ] ; then
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install --key-bindings --completion --no-update-rc
-fi
+# (fzf comes from mise on Linux and the Brewfile on macOS; shell keybindings are
+# wired up via `fzf --zsh` in zshrc.core.zsh — no git-install needed.)
 
 if [ ! -d ~/.tmux/plugins/tpm ] ; then
     mkdir -p ~/.tmux/plugins

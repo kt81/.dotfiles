@@ -38,15 +38,25 @@ opt.showmatch = true
 opt.list = true
 opt.listchars = { eol = '↲', trail = '-', tab = '» ', extends = '$', space = '.' }
 
--- Yank to the Windows clipboard from WSL (replaces the old clip.exe autocmd).
+-- Yank to the Windows clipboard from WSL. Prefer win32yank (fast, handles
+-- UTF-8/CRLF, no per-paste PowerShell spawn); fall back to clip.exe + Get-Clipboard.
 if vim.fn.has('wsl') == 1 then
-  vim.g.clipboard = {
-    name = 'WslClipboard',
-    copy = { ['+'] = 'clip.exe', ['*'] = 'clip.exe' },
-    paste = {
-      ['+'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r",""))',
-      ['*'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r",""))',
-    },
-    cache_enabled = 0,
-  }
+  if vim.fn.executable('win32yank.exe') == 1 then
+    vim.g.clipboard = {
+      name = 'win32yank-wsl',
+      copy = { ['+'] = 'win32yank.exe -i --crlf', ['*'] = 'win32yank.exe -i --crlf' },
+      paste = { ['+'] = 'win32yank.exe -o --lf', ['*'] = 'win32yank.exe -o --lf' },
+      cache_enabled = 0,
+    }
+  else
+    vim.g.clipboard = {
+      name = 'WslClipboard',
+      copy = { ['+'] = 'clip.exe', ['*'] = 'clip.exe' },
+      paste = {
+        ['+'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r",""))',
+        ['*'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r",""))',
+      },
+      cache_enabled = 0,
+    }
+  end
 end
