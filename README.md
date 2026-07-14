@@ -31,10 +31,9 @@ with my preferred tools and configuration.
   (node / python / ruby / …), honoring per-project `.tool-versions` / `.node-version`.
   Extra tracked tools (e.g. **keifu**) live in `mise/config.toml`, linked into
   mise's `conf.d` so `mise use -g` never dirties this repo.
-- Symlinks editor, tmux, Neovim, mise and (on Windows) the Windows Terminal
-  settings, and seeds a **local** `~/.zshrc` and `~/.gitconfig` that *source* /
-  *include* the tracked configs — so tool installers and `git config --global`
-  never dirty this repo
+- Symlinks editor, tmux, Neovim and mise configs, and seeds a **local**
+  `~/.zshrc` and `~/.gitconfig` that *source* / *include* the tracked configs —
+  so tool installers and `git config --global` never dirty this repo
 - Installs fzf, tmux plugins (tpm) and the HackGen Nerd Font
 
 ### Included
@@ -49,8 +48,7 @@ with my preferred tools and configuration.
   LSP via mason) — the old vim-plug / `.vimrc` is retired
 - Powerline-style **tmux** theme
 - zsh niceties: autosuggestions, fast-syntax-highlighting, extra completions
-- A PowerShell profile mirroring the zsh setup, and a managed Windows Terminal
-  config (HackGen Nerd Font + tokyonight-moon)
+- A PowerShell profile mirroring the zsh setup
 
 Layout
 ------
@@ -64,7 +62,6 @@ Layout
 | `starship.toml` | Prompt config (shared by zsh + PowerShell) |
 | `Brewfile` / `Brewfile.local` | macOS packages (tracked base / untracked machine extras) |
 | `windows/winget.json` | Windows package set (`winget import`) |
-| `windows/WindowsTerminal/settings.json` | Managed Windows Terminal settings |
 | `nvim/` | Neovim config (Lua + lazy.nvim; dir symlinked into place) |
 | `mise/config.toml` | Tracked mise tools (linked into mise `conf.d`) |
 | `atuin/` | Tracked atuin config |
@@ -116,6 +113,13 @@ Notes:
   `zshrc.wsl.zsh`. Clipboard routes through `win32yank` (zsh `pbcopy`/`pbpaste`,
   tmux-yank, Neovim), and `open` / `start` use `wslview` (from `wslu`). Run
   `wsl --shutdown` once from Windows after setup to apply the PATH change.
+- Windows Terminal settings are deliberately **not** tracked. Terminal rewrites
+  `settings.json` on its own (reordering keys, adding compat flags) and
+  regenerates profiles from whatever WSL distros / apps are installed, so the
+  file is inherently machine-specific. Its fragment mechanism only covers schemes
+  and individual profiles — not `profiles.defaults`, `actions` or globals — so
+  there is nothing worth splitting out. Set the font (HackGen Console NF, which
+  `setup.core.ps1` installs) and theme by hand.
 
 Disclaimer
 ----------

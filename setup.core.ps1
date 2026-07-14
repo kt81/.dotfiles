@@ -173,17 +173,11 @@ linkNx    ~/.tmux.conf   .tmux.conf
 # mise: drop-in so `mise use -g` never dirties the repo (see mise/config.toml)
 linkNx    $miseConfDest  "mise/config.toml"
 
-# Windows Terminal settings (Windows only). Takes ownership; the previous file
-# is backed up next to it.
-if ($IsWindows) {
-    $wtDest = Join-Path $env:LOCALAPPDATA `
-        "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    if (Test-Path (Split-Path $wtDest)) {
-        linkForce $wtDest "windows\WindowsTerminal\settings.json"
-    } else {
-        skip "Windows Terminal not installed — skipping its settings link."
-    }
-}
+# Windows Terminal settings are deliberately NOT managed here. Terminal rewrites
+# settings.json itself (reordering keys, adding compat flags) and regenerates
+# profiles from whatever WSL distros / apps happen to be installed, so the file
+# is inherently machine-specific. Its fragment mechanism can't express
+# profiles.defaults, actions or globals either — so it stays a local file.
 
 # ---- git: make the local ~/.gitconfig include the managed config ----
 # Append the [include] if it isn't there yet (creating the file if needed).
