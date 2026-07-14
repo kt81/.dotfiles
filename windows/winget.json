@@ -34,7 +34,9 @@
         { "PackageIdentifier": "jqlang.jq" },
         { "PackageIdentifier": "Clement.bottom" },
         { "PackageIdentifier": "koalaman.shellcheck" },
-        { "PackageIdentifier": "ezwinports.make" }
+        { "PackageIdentifier": "ezwinports.make" },
+        { "PackageIdentifier": "Ninja-build.Ninja" },
+        { "PackageIdentifier": "Gyan.FFmpeg" }
       ]
     }
   ],
