@@ -107,6 +107,12 @@ Notes:
 - Treesitter compiles its parsers, so a C compiler has to be on `PATH`. On
   Windows, LLVM/clang works (`winget install LLVM.LLVM`); it isn't in
   `windows/winget.json` because it's a heavy dependency to force on every host.
+- Rust is bootstrapped by `Rustlang.Rustup` in the winget set, but rustup
+  self-manages after that: winget reports its version as "Unknown" and leaves it
+  out of `winget upgrade`, so keep updating with `rustup update`. Its default
+  `x86_64-pc-windows-msvc` toolchain needs the Visual Studio C++ build tools.
+  (Linux/macOS install rust by hand — `setup.sh` no longer needs a toolchain now
+  that the CLI tools come from mise as prebuilt binaries.)
 - **WSL**: `setup.sh` sets `appendWindowsPath = false` in `/etc/wsl.conf` so
   shells don't inherit the huge Windows `PATH` (command lookup / completion stay
   fast); only the handful of Windows tools actually used are re-added in

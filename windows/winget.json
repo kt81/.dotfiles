@@ -16,6 +16,7 @@
         { "PackageIdentifier": "Microsoft.WindowsTerminal" },
         { "PackageIdentifier": "Microsoft.VisualStudioCode" },
         { "PackageIdentifier": "Microsoft.DotNet.SDK.10" },
+        { "PackageIdentifier": "Rustlang.Rustup" },
         { "PackageIdentifier": "JetBrains.Toolbox" },
         { "PackageIdentifier": "M2Team.NanaZip" },
         { "PackageIdentifier": "gerardog.gsudo" },
