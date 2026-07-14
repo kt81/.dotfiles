@@ -5,5 +5,9 @@
 # Per-project runtimes still come from each project's .mise.toml / .tool-versions.
 
 [tools]
+# Default node for machines that don't pin one. "lts" follows each new LTS line
+# automatically; per-project .tool-versions / .mise.toml still win over this.
+node = "lts"
+
 # keifu — a colorful TUI for navigating git commit graphs (log viewing).
 "github:trasta298/keifu" = "latest"
