@@ -18,30 +18,23 @@ return {
 
   -- Treesitter (replaces vim-polyglot for highlighting/indent).
   -- Pinned to the stable `master` branch; `main` dropped the configs API.
-  --
-  -- Windows: parser auto-install is OFF. The master installer feeds forward-slash
-  -- paths to cmd's `rmdir`, which misreads `/Users` as a switch and aborts the
-  -- build (an upstream Windows bug). Install parsers on demand with `:TSInstall
-  -- <lang>` (needs a C compiler such as clang/LLVM on PATH). Elsewhere the
-  -- installer works, so parsers auto-install as files are opened.
+  -- Parsers are compiled on install, so a C compiler (clang/LLVM, gcc, ...)
+  -- must be on PATH.
   {
     'nvim-treesitter/nvim-treesitter',
     branch = 'master',
     build = ':TSUpdate',
     event = { 'BufReadPost', 'BufNewFile' },
-    opts = function()
-      local is_win = vim.fn.has('win32') == 1
-      return {
-        ensure_installed = is_win and {} or {
-          'lua', 'vim', 'vimdoc', 'bash', 'json', 'yaml', 'toml',
-          'markdown', 'markdown_inline', 'c_sharp', 'python', 'go',
-          'javascript', 'typescript', 'html', 'css',
-        },
-        auto_install = not is_win,
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
-    end,
+    opts = {
+      ensure_installed = {
+        'lua', 'vim', 'vimdoc', 'bash', 'json', 'yaml', 'toml',
+        'markdown', 'markdown_inline', 'c_sharp', 'python', 'go',
+        'javascript', 'typescript', 'html', 'css',
+      },
+      auto_install = true,
+      highlight = { enable = true },
+      indent = { enable = true },
+    },
     config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
     end,

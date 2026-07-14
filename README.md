@@ -104,9 +104,9 @@ Notes:
 - `tig` is not packaged for winget; use it inside WSL (installed by `setup.sh`).
   On native Windows, **keifu** (installed via mise) covers colorful commit-graph
   browsing, and `git log` is paged through git-delta.
-- Treesitter parsers don't auto-install on Windows (an upstream `nvim-treesitter`
-  path bug). Install them on demand with `:TSInstall <lang>` — a C compiler such
-  as LLVM/clang must be on `PATH`.
+- Treesitter compiles its parsers, so a C compiler has to be on `PATH`. On
+  Windows, LLVM/clang works (`winget install LLVM.LLVM`); it isn't in
+  `windows/winget.json` because it's a heavy dependency to force on every host.
 - **WSL**: `setup.sh` sets `appendWindowsPath = false` in `/etc/wsl.conf` so
   shells don't inherit the huge Windows `PATH` (command lookup / completion stay
   fast); only the handful of Windows tools actually used are re-added in
