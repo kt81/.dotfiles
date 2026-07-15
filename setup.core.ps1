@@ -196,6 +196,22 @@ if ((Test-Path $gitconfig) -and ((Get-Content $gitconfig -Raw) -match [regex]::E
 if (Test-Cmd mise) {
     task "Installing mise tools (mise install)"
     try { mise install } catch { skip "mise install skipped: $_" }
+
+    # Put mise's shims on PATH. `mise activate` (in the PowerShell profile) only
+    # covers shells that source it, so without this, mise-managed tools are
+    # invisible to Windows PowerShell 5.1, IDEs, and anything launched from the
+    # GUI. The shims still resolve per-project versions; activate takes
+    # precedence in interactive pwsh.
+    if ($IsWindows) {
+        $shims = Join-Path $env:LOCALAPPDATA "mise\shims"
+        $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+        if (($userPath -split ';') -notcontains $shims) {
+            [Environment]::SetEnvironmentVariable('Path', ($userPath.TrimEnd(';') + ';' + $shims), 'User')
+            task "Added mise shims to the user PATH: $shims"
+        } else {
+            skip "mise shims already on PATH."
+        }
+    }
 }
 
 # ---- nvim: let lazy.nvim bootstrap itself and sync plugins ----

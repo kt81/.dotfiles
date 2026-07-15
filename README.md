@@ -113,6 +113,11 @@ Notes:
   `x86_64-pc-windows-msvc` toolchain needs the Visual Studio C++ build tools.
   (Linux/macOS install rust by hand — `setup.sh` no longer needs a toolchain now
   that the CLI tools come from mise as prebuilt binaries.)
+- `setup.core.ps1` adds mise's shims (`%LOCALAPPDATA%\mise\shims`) to the user
+  PATH. `mise activate` only covers shells that source the profile, so without
+  the shims, mise-managed tools (node, keifu, …) are invisible to Windows
+  PowerShell 5.1, IDEs, and anything launched from the GUI. Shims still resolve
+  per-project versions; interactive pwsh keeps using the faster activate path.
 - **WSL**: `setup.sh` sets `appendWindowsPath = false` in `/etc/wsl.conf` so
   shells don't inherit the huge Windows `PATH` (command lookup / completion stay
   fast); only the handful of Windows tools actually used are re-added in
