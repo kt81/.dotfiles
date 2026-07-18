@@ -87,6 +87,14 @@ if (Test-Cmd eza) {
 }
 
 # ----------------------------------
+# pager -> ov (bat and friends page through it; git keeps its own pager, delta)
+# ----------------------------------
+if (Test-Cmd ov) {
+    $env:PAGER = 'ov'
+    $env:MANPAGER = 'ov'
+}
+
+# ----------------------------------
 # local, machine-specific settings (tool installers, secrets, per-host tweaks)
 # ----------------------------------
 if (Test-Path ~/.profile.mine.ps1) {

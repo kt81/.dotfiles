@@ -15,6 +15,7 @@ brew "ripgrep"    # rg  — grep
 brew "fd"         #     — find
 brew "eza"        #     — ls
 brew "bat"        #     — cat + syntax highlight
+brew "ov"         #     — feature-rich pager ($PAGER); less alternative
 brew "git-delta"  # delta — git diff pager
 brew "fzf"        #     — fuzzy finder
 brew "zoxide"     #     — smart cd (successor to zsh-z)

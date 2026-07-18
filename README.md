@@ -20,7 +20,7 @@ with my preferred tools and configuration.
   - Windows: **winget** only, from a declarative `windows/winget.json`
     (`winget import`). Chocolatey has been retired.
   - Linux: apt for system packages + **mise** for CLI tools (eza, bat, delta,
-    zoxide, starship, atuin, gh, fzf) as prebuilt binaries — no rust toolchain
+    zoxide, starship, atuin, gh, fzf, ov) as prebuilt binaries — no rust toolchain
     required (install rust/cargo manually only where you build Rust)
 - Prompt is **[starship](https://starship.rs/)** everywhere — zsh *and* PowerShell
   share the one `starship.toml`
@@ -41,6 +41,9 @@ with my preferred tools and configuration.
 - **starship** prompt (cross-shell: zsh + PowerShell)
 - **mise** for runtimes (replaces asdf + nvm)
 - Modern CLI: eza, bat, fd, ripgrep, zoxide, git-delta, fzf, atuin, jq, bottom
+- **[ov](https://noborus.github.io/ov/)** as the `$PAGER` (less-style keybinds
+  via a tracked config) — so `bat`, `man` and friends page nicely everywhere;
+  git keeps its own pager (**git-delta**)
 - **[keifu](https://github.com/trasta298/keifu)** — colorful git commit-graph TUI
   (installed via mise); `tig` for log browsing on macOS / Linux / WSL
 - **neovim** as a Lua + [lazy.nvim](https://github.com/folke/lazy.nvim) config
@@ -65,6 +68,7 @@ Layout
 | `nvim/` | Neovim config (Lua + lazy.nvim; dir symlinked into place) |
 | `mise/config.toml` | Tracked mise tools (linked into mise `conf.d`) |
 | `atuin/` | Tracked atuin config |
+| `ov/config.yaml` | Tracked ov pager config (less-style keybinds; symlinked to `~/.config/ov/`) |
 | `.tmux.conf` | tmux config |
 | `install.ps1` / `install.sh` | One-line bootstrap (clone + run the installer) |
 | `setup.sh` / `setup.ps1` / `setup.core.ps1` | Installers |

@@ -32,6 +32,7 @@ packagesLinux=(
 # rust/cargo is installed manually only on hosts where you actually build Rust.
 miseTools=(
     eza delta bat zoxide starship atuin gh fzf
+    "aqua:noborus/ov"   # ov — feature-rich pager; not in mise's shorthand registry
 )
 
 # ----------------------------------

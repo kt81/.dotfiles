@@ -29,6 +29,7 @@
         { "PackageIdentifier": "dandavison.delta" },
         { "PackageIdentifier": "eza-community.eza" },
         { "PackageIdentifier": "sharkdp.bat" },
+        { "PackageIdentifier": "noborus.ov" },
         { "PackageIdentifier": "sharkdp.fd" },
         { "PackageIdentifier": "BurntSushi.ripgrep.MSVC" },
         { "PackageIdentifier": "junegunn.fzf" },

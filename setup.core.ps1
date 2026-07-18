@@ -159,11 +159,13 @@ if ($IsWindows) {
     $nvimDest      = Join-Path $env:LOCALAPPDATA "nvim"
     $ideavimrcDest = "~/_ideavimrc"
     $miseConfDest  = Join-Path $env:USERPROFILE ".config\mise\conf.d\dotfiles.toml"
+    $ovConfDest    = Join-Path $env:USERPROFILE ".config\ov\config.yaml"
 } else {
     $psProfileDest = Join-Path $linuxXdgConfig "powershell" $psProfile
     $nvimDest      = Join-Path $linuxXdgConfig "nvim"
     $ideavimrcDest = "~/.ideavimrc"
     $miseConfDest  = Join-Path $linuxXdgConfig "mise/conf.d/dotfiles.toml"
+    $ovConfDest    = Join-Path $linuxXdgConfig "ov/config.yaml"
 }
 
 linkNx    $psProfileDest $psProfile
@@ -172,6 +174,8 @@ linkNx    $ideavimrcDest .ideavimrc
 linkNx    ~/.tmux.conf   .tmux.conf
 # mise: drop-in so `mise use -g` never dirties the repo (see mise/config.toml)
 linkNx    $miseConfDest  "mise/config.toml"
+# ov pager config (less-style keybinds; generated via `ov --generate-config=less`)
+linkNx    $ovConfDest    "ov/config.yaml"
 
 # Windows Terminal settings are deliberately NOT managed here. Terminal rewrites
 # settings.json itself (reordering keys, adding compat flags) and regenerates

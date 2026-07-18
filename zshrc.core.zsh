@@ -57,6 +57,12 @@ export EDITOR=$VIM_BIN
 export GIT_EDITOR=$VIM_BIN
 export VISUAL=$VIM_BIN
 
+# pager -> ov (bat, man, etc. page through it; git keeps its own pager, delta)
+if cex ov ; then
+    export PAGER=ov
+    export MANPAGER=ov
+fi
+
 # configure XDG Base Directory
 [ ! -e ~/.config ] && mkdir ~/.config
 export XDG_CONFIG_HOME=~/.config
