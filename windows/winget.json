@@ -15,6 +15,7 @@
         { "PackageIdentifier": "Microsoft.PowerShell" },
         { "PackageIdentifier": "Microsoft.WindowsTerminal" },
         { "PackageIdentifier": "Microsoft.VisualStudioCode" },
+        { "PackageIdentifier": "ZedIndustries.Zed" },
         { "PackageIdentifier": "Microsoft.DotNet.SDK.10" },
         { "PackageIdentifier": "Rustlang.Rustup" },
         { "PackageIdentifier": "JetBrains.Toolbox" },
