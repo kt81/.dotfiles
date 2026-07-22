@@ -196,6 +196,21 @@ if ((Test-Path $gitconfig) -and ((Get-Content $gitconfig -Raw) -match [regex]::E
     task "Added [include] path = $inc to ~/.gitconfig"
 }
 
+# ---- Claude Code CLI: install if missing --------------------------------
+# Official native installer: no admin, installs to ~/.local/bin (unix) or the
+# user profile (Windows), and self-updates in the background — so it stays
+# current with no package-manager step. Preferred over the Homebrew cask /
+# winget package, neither of which auto-updates.
+if (Test-Cmd claude) {
+    skip "Claude Code already installed ($(claude --version))"
+} else {
+    task "Installing Claude Code (native installer)"
+    try {
+        if ($IsWindows) { Invoke-RestMethod https://claude.ai/install.ps1 | Invoke-Expression }
+        else            { & bash -c 'curl -fsSL https://claude.ai/install.sh | bash' }
+    } catch { skip "Claude Code install skipped: $_" }
+}
+
 # ---- Claude Code status line: wire the tracked renderer into settings.json ----
 # ~/.claude/settings.json is machine-local (not tracked), so setup writes the
 # statusLine entry on each host. Windows uses the PowerShell renderer; unix uses
