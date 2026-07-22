@@ -196,6 +196,27 @@ if ((Test-Path $gitconfig) -and ((Get-Content $gitconfig -Raw) -match [regex]::E
     task "Added [include] path = $inc to ~/.gitconfig"
 }
 
+# ---- Claude Code status line: wire the tracked renderer into settings.json ----
+# ~/.claude/settings.json is machine-local (not tracked), so setup writes the
+# statusLine entry on each host. Windows uses the PowerShell renderer; unix uses
+# the bash+jq one, which avoids pwsh's ~0.4s per-render cold start (the status
+# line re-runs on every conversation update). Other keys (theme, ...) are kept.
+task "Wiring Claude Code status line into ~/.claude/settings.json"
+$claudeDir    = Join-Path $HOME ".claude"
+$settingsPath = Join-Path $claudeDir "settings.json"
+$repoFwd      = $repoRoot -replace '\\', '/'
+$statusCmd    = if ($IsWindows) { "pwsh -NoProfile -File `"$repoFwd/claude-statusline.ps1`"" }
+                else            { "bash `"$repoFwd/claude-statusline.sh`"" }
+$settings = if (Test-Path $settingsPath) {
+    try { Get-Content $settingsPath -Raw | ConvertFrom-Json } catch { [pscustomobject]@{} }
+} else { [pscustomobject]@{} }
+$sl = [pscustomobject]@{ type = 'command'; command = $statusCmd }
+if ($settings.PSObject.Properties['statusLine']) { $settings.statusLine = $sl }
+else { $settings | Add-Member -NotePropertyName statusLine -NotePropertyValue $sl }
+if (!(Test-Path $claudeDir)) { New-Item -ItemType Directory $claudeDir | Out-Null }
+$settings | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $settingsPath -Encoding utf8
+skip "  statusLine -> $statusCmd"
+
 # ---- mise: install the tools declared in the tracked conf.d drop-in (keifu, ...) ----
 if (Test-Cmd mise) {
     task "Installing mise tools (mise install)"
