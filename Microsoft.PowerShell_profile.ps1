@@ -49,7 +49,7 @@ if ((Test-Cmd fzf) -and (Get-Module -ListAvailable PSFzf)) {
 # ----------------------------------
 # prompt: starship (config shared with zsh via ~/.dotfiles/starship.toml)
 # ----------------------------------
-$env:STARSHIP_CONFIG = "$HOME\.dotfiles\starship.toml"
+$env:STARSHIP_CONFIG = Join-Path $HOME ".dotfiles" "starship.toml"
 if (Test-Cmd starship) { starship init powershell | Out-String | Invoke-Expression }
 
 # ----------------------------------
@@ -66,7 +66,7 @@ if (Test-Cmd zoxide) { zoxide init powershell | Out-String | Invoke-Expression }
 # atuin — SQLite-backed shell history (Ctrl+r). Init LAST so it owns Ctrl+r;
 # up-arrow stays on PSReadLine. Config shared with zsh.
 # ----------------------------------
-$env:ATUIN_CONFIG_DIR = "$HOME\.dotfiles\atuin"
+$env:ATUIN_CONFIG_DIR = Join-Path $HOME ".dotfiles" "atuin"
 if (Test-Cmd atuin) { atuin init powershell --disable-up-arrow | Out-String | Invoke-Expression }
 
 # ----------------------------------

@@ -27,12 +27,20 @@ packagesLinux=(
     fd-find apt-transport-https software-properties-common
     # runtime (ruby/python) source-build deps
     build-essential libssl-dev zlib1g-dev libyaml-dev libsqlite3-dev libreadline-dev
+    # ICU runtime for the mise/aqua PowerShell tarball (.NET globalization).
+    # Unlike the MS pwsh package, libicu ships in Ubuntu's own repos, so it
+    # installs on 26.04 too. (-dev is the version-agnostic name; pulls libicuNN.)
+    libicu-dev
 )
 # Linux CLI tools come from mise (prebuilt binaries) — no rust toolchain needed.
 # rust/cargo is installed manually only on hosts where you actually build Rust.
 miseTools=(
     eza delta bat zoxide starship atuin gh fzf
     "aqua:noborus/ov"   # ov — feature-rich pager; not in mise's shorthand registry
+    # pwsh 7 — self-contained linux tarball from GitHub releases. Replaces the MS
+    # apt repo, which has no powershell package for Ubuntu 26.04. Needs libicu
+    # (see packagesLinux) for full .NET globalization.
+    "aqua:PowerShell/PowerShell"
 )
 
 # ----------------------------------
@@ -79,7 +87,6 @@ if [[ $machine = 'Linux' ]] ; then
     read -p "Install system packages? Enter N to skip if you're on a shared server. (y/N): " -n 1 -r inst
     echo
     if [[ $inst =~ ^[Yy]$ ]] ; then
-        source /etc/os-release
         sudo apt-get update
         sudo apt-get install -y "${packagesCommon[@]}" "${packagesLinux[@]}"
 
@@ -88,15 +95,10 @@ if [[ $machine = 'Linux' ]] ; then
             sudo apt-get install -y locales
             sudo locale-gen en_US.UTF-8
         fi
-
-        if ! dpkg -s packages-microsoft-prod &>/dev/null ; then
-            wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
-            sudo dpkg -i packages-microsoft-prod.deb
-            sudo apt-get update
-            sudo apt-get install -y powershell
-            rm packages-microsoft-prod.deb
-        fi
     fi
+    # PowerShell (pwsh) is no longer installed from the Microsoft apt repo — it
+    # has no package for Ubuntu 26.04. It now comes from mise/aqua (see miseTools
+    # / the `mise use` calls below), which works on every Ubuntu version.
 
     # CLI tools via mise (prebuilt binaries; no rust build). Install mise first.
     if ! cex mise ; then
@@ -141,7 +143,13 @@ sudo chsh -s "$(which zsh)" "$USER"
 # ----------------------------------
 # Common and PowerShell
 # ----------------------------------
-cex pwsh && pwsh -NoProfile "$repoRoot/setup.core.ps1"
+# pwsh isn't on PATH in this bash context on Linux (mise isn't activated here),
+# so resolve it via mise; on macOS it's on PATH already. GLOBALIZATION_INVARIANT
+# lets the tarball pwsh run even when libicu is missing (e.g. system packages
+# were skipped) — safe here since this is a -NoProfile config run doing no
+# culture-sensitive work; interactive pwsh gets real ICU from libicu.
+pwshBin="$(command -v pwsh || "$HOME/.local/bin/mise" which pwsh 2>/dev/null)"
+[ -n "$pwshBin" ] && DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 "$pwshBin" -NoProfile "$repoRoot/setup.core.ps1"
 
 # ----------------------------------
 # Common over *NIX Platforms
