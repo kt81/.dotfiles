@@ -218,10 +218,14 @@ if (Test-Cmd mise) {
     }
 }
 
-# ---- nvim: let lazy.nvim bootstrap itself and sync plugins ----
+# ---- nvim: bootstrap lazy.nvim and install plugins AT the locked versions ----
+# `restore` installs/checks out exactly what lazy-lock.json pins and never
+# rewrites it, so running setup on any machine produces no lockfile churn (which
+# `sync` did on every run). Bump versions deliberately with `:Lazy sync`, then
+# commit the updated lock once; other machines pick it up on their next setup.
 if (Test-Cmd nvim) {
-    task "Syncing Neovim plugins (lazy.nvim)"
-    try { nvim --headless "+Lazy! sync" +qa } catch { skip "Plugin sync skipped: $_" }
+    task "Restoring Neovim plugins to locked versions (lazy.nvim)"
+    try { nvim --headless "+Lazy! restore" +qa } catch { skip "Plugin restore skipped: $_" }
 } else {
     skip "nvim not on PATH yet — open nvim once to let lazy.nvim install plugins."
 }
