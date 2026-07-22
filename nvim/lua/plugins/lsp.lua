@@ -49,11 +49,13 @@ return {
         ensure_installed = { 'lua_ls' },
       })
 
+      -- nvim 0.11+ LSP API: nvim-lspconfig ships each server's defaults as
+      -- lsp/<name>.lua, consumed by vim.lsp.config/enable (the old
+      -- require('lspconfig')[server].setup framework is deprecated). The '*'
+      -- entry layers our shared cmp capabilities onto every server.
       local caps = require('cmp_nvim_lsp').default_capabilities()
-      local lspconfig = require('lspconfig')
-      for _, server in ipairs({ 'lua_ls' }) do
-        lspconfig[server].setup({ capabilities = caps })
-      end
+      vim.lsp.config('*', { capabilities = caps })
+      vim.lsp.enable({ 'lua_ls' })
 
       -- Shared LSP keymaps
       vim.api.nvim_create_autocmd('LspAttach', {
