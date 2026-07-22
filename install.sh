@@ -6,7 +6,8 @@
 #
 set -euo pipefail
 
-repo="https://github.com/kt81/.dotfiles.git"
+repo="https://github.com/kt81/.dotfiles.git"       # HTTPS: works before any SSH key exists
+repoSsh="git@github.com:kt81/.dotfiles.git"         # switched to after clone (see below)
 dest="$HOME/.dotfiles"
 
 if ! command -v git &>/dev/null ; then
@@ -19,5 +20,9 @@ if [ ! -d "$dest/.git" ] ; then
 else
     echo "Existing checkout found at $dest — leaving it as is."
 fi
+
+# Bootstrap clones over HTTPS (no SSH key needed yet); switch origin to SSH so
+# day-to-day pull/push uses keys instead of prompting for a password/token.
+git -C "$dest" remote set-url origin "$repoSsh"
 
 exec "$dest/setup.sh"
