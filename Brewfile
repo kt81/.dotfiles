@@ -8,6 +8,7 @@
 brew "zsh"
 brew "tmux"
 brew "neovim"
+brew "tree-sitter" # CLI to build nvim-treesitter parsers (main branch needs it)
 brew "starship"   # cross-shell prompt (replaces powerlevel10k)
 
 # --- modern CLI ---

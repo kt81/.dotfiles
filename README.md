@@ -20,8 +20,8 @@ with my preferred tools and configuration.
   - Windows: **winget** only, from a declarative `windows/winget.json`
     (`winget import`). Chocolatey has been retired.
   - Linux: apt for system packages + **mise** for CLI tools (eza, bat, delta,
-    zoxide, starship, atuin, gh, fzf, ov) as prebuilt binaries — no rust toolchain
-    required (install rust/cargo manually only where you build Rust)
+    zoxide, starship, atuin, gh, fzf, ov, tree-sitter) as prebuilt binaries — no
+    rust toolchain required (install rust/cargo manually only where you build Rust)
 - Prompt is **[starship](https://starship.rs/)** everywhere — zsh *and* PowerShell
   share the one `starship.toml`
 - Sets up **zsh** via [zinit](https://github.com/zdharma-continuum/zinit); the
@@ -108,9 +108,13 @@ Notes:
 - `tig` is not packaged for winget; use it inside WSL (installed by `setup.sh`).
   On native Windows, **keifu** (installed via mise) covers colorful commit-graph
   browsing, and `git log` is paged through git-delta.
-- Treesitter compiles its parsers, so a C compiler has to be on `PATH`. On
-  Windows, LLVM/clang works (`winget install LLVM.LLVM`); it isn't in
-  `windows/winget.json` because it's a heavy dependency to force on every host.
+- nvim-treesitter is on the **`main`** branch (a rewrite; needs nvim 0.11+).
+  It builds parsers with the **`tree-sitter` CLI** (in the winget/Brewfile sets
+  and mise on Linux), which in turn shells out to a **C compiler** — so one must
+  be on `PATH`. On Windows, LLVM/clang works (`winget install LLVM.LLVM`); it
+  isn't in `windows/winget.json` because it's a heavy dependency to force on
+  every host. (The old `master` branch bundled pre-generated parser sources and
+  needed only the C compiler; `main` requires the CLI as well.)
 - Rust is bootstrapped by `Rustlang.Rustup` in the winget set, but rustup
   self-manages after that: winget reports its version as "Unknown" and leaves it
   out of `winget upgrade`, so keep updating with `rustup update`. Its default

@@ -23,6 +23,7 @@
         { "PackageIdentifier": "gerardog.gsudo" },
 
         { "PackageIdentifier": "Neovim.Neovim" },
+        { "PackageIdentifier": "tree-sitter.tree-sitter-cli" },
         { "PackageIdentifier": "Starship.Starship" },
         { "PackageIdentifier": "ajeetdsouza.zoxide" },
         { "PackageIdentifier": "Atuinsh.Atuin" },

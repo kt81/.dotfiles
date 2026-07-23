@@ -36,6 +36,7 @@ packagesLinux=(
 # rust/cargo is installed manually only on hosts where you actually build Rust.
 miseTools=(
     eza delta bat zoxide starship atuin gh fzf
+    tree-sitter         # CLI to build nvim-treesitter parsers (main branch needs it)
     "aqua:noborus/ov"   # ov — feature-rich pager; not in mise's shorthand registry
     # pwsh 7 — self-contained linux tarball from GitHub releases. Replaces the MS
     # apt repo, which has no powershell package for Ubuntu 26.04. Needs libicu
