@@ -232,6 +232,51 @@ if (!(Test-Path $claudeDir)) { New-Item -ItemType Directory $claudeDir | Out-Nul
 $settings | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $settingsPath -Encoding utf8
 skip "  statusLine -> $statusCmd"
 
+# ---- Codex CLI status line -------------------------------------------------
+# Codex renders its footer itself (unlike Claude Code's external status-line
+# command). Keep the closest useful equivalents visible: model + reasoning,
+# remaining context, current directory, and Git branch. The terminal title
+# carries the project/branch context that Claude's first row also showed.
+# Preserve every other user setting in ~/.codex/config.toml, including trusted
+# project entries and platform-specific sandbox preferences.
+task "Configuring Codex CLI status line"
+$codexDir    = Join-Path $HOME ".codex"
+$codexConfig = Join-Path $codexDir "config.toml"
+$codexTui = @(
+    '[tui]'
+    'status_line = ["model-with-reasoning", "context-remaining", "current-dir", "git-branch"]'
+    'terminal_title = ["spinner", "project", "git-branch"]'
+)
+$codexLines = if (Test-Path -LiteralPath $codexConfig) {
+    @(Get-Content -LiteralPath $codexConfig)
+} else { @() }
+$tuiStart = -1
+for ($i = 0; $i -lt $codexLines.Count; $i++) {
+    if ($codexLines[$i] -match '^\s*\[tui\]\s*$') { $tuiStart = $i; break }
+}
+if ($tuiStart -ge 0) {
+    $tuiEnd = $codexLines.Count
+    for ($i = $tuiStart + 1; $i -lt $codexLines.Count; $i++) {
+        if ($codexLines[$i] -match '^\s*\[') { $tuiEnd = $i; break }
+    }
+    # Replace only the settings this dotfiles repo owns; retain all other TUI
+    # options and comments in their original order.
+    $tuiBody = if ($tuiEnd -gt ($tuiStart + 1)) {
+        @($codexLines[($tuiStart + 1)..($tuiEnd - 1)])
+    } else { @() }
+    $tuiRest = @($tuiBody | Where-Object { $_ -notmatch '^\s*(status_line|terminal_title)\s*=' })
+    $prefix = if ($tuiStart -gt 0) { @($codexLines[0..($tuiStart - 1)]) } else { @() }
+    $suffix = if ($tuiEnd -lt $codexLines.Count) { @($codexLines[$tuiEnd..($codexLines.Count - 1)]) } else { @() }
+    $codexLines = @($prefix + $codexTui + $tuiRest + $suffix)
+} else {
+    if ($codexLines.Count) { $codexLines += '' }
+    $codexLines += $codexTui
+}
+if (!(Test-Path -LiteralPath $codexDir)) { New-Item -ItemType Directory -Path $codexDir | Out-Null }
+Set-Content -LiteralPath $codexConfig -Value $codexLines -Encoding utf8
+skip "  status_line -> model / context / directory / Git branch"
+skip "  terminal_title -> project / Git branch"
+
 # ---- mise: install the tools declared in the tracked conf.d drop-in (keifu, ...) ----
 if (Test-Cmd mise) {
     task "Installing mise tools (mise install)"

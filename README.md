@@ -35,6 +35,8 @@ with my preferred tools and configuration.
   `~/.zshrc` and `~/.gitconfig` that *source* / *include* the tracked configs —
   so tool installers and `git config --global` never dirty this repo
 - Installs fzf, tmux plugins (tpm) and the HackGen Nerd Font
+- Configures the Codex CLI footer with model/reasoning, remaining context,
+  directory and Git branch; its terminal title shows project and branch
 
 ### Included
 
@@ -69,6 +71,7 @@ Layout
 | `mise/config.toml` | Tracked mise tools (linked into mise `conf.d`) |
 | `atuin/` | Tracked atuin config |
 | `ov/config.yaml` | Tracked ov pager config (less-style keybinds; symlinked to `~/.config/ov/`) |
+| `claude-statusline.ps1` / `.sh` | Two-row custom Claude Code status line (Windows / macOS/Linux) |
 | `.tmux.conf` | tmux config |
 | `install.ps1` / `install.sh` | One-line bootstrap (clone + run the installer) |
 | `setup.sh` / `setup.ps1` / `setup.core.ps1` | Installers |
