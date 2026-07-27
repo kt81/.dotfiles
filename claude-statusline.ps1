@@ -93,7 +93,7 @@ if ($branch) { $l1 += "$mag$BranchGlyph $branch$reset" }
 
 # --- row 2: model(effort) · context bar · rate limits --------------------
 $l2 = @()
-$modelSeg = "$ModelGlyph $cyan$model$reset"
+$modelSeg = "$ModelGlyph$cyan$model$reset"
 if ($effort) { $modelSeg += " $dim($effort)$reset" }
 $l2 += $modelSeg
 $l2 += "$(Ct $pct)$bar ${pct}%$reset $dim(${usedK}k/${winTxt})$reset"
