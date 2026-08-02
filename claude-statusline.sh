@@ -94,7 +94,7 @@ if [ -n "$title" ]; then l1+=("$TitleGlyph ${bold}${title}${reset}"); else l1+=(
 [ -n "$branch" ] && l1+=("${mag}${BranchGlyph} ${branch}${reset}")
 
 # --- row 2: model(effort) · context bar · rate limits --------------------
-modelSeg="$ModelGlyph${cyan}${model}${reset}"
+modelSeg="$ModelGlyph ${cyan}${model}${reset}"
 [ -n "$effort" ] && modelSeg="$modelSeg ${dim}(${effort})${reset}"
 l2=("$modelSeg")
 l2+=("$(ct "$pct")${bar} ${pct}%${reset} ${dim}(${usedK}k/${winTxt})${reset}")
