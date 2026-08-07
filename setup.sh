@@ -168,6 +168,12 @@ else
     popd
 fi
 
+# Install the @plugin list up front and drop anything no longer listed. Without
+# this a fresh box shows the raw `#{cpu_percentage}` tokens in the status bar
+# until someone remembers to hit `prefix + I`.
+~/.tmux/plugins/tpm/bin/install_plugins
+~/.tmux/plugins/tpm/bin/clean_plugins
+
 # git: make the local ~/.gitconfig include the managed config (declarative).
 # Personal identity / credentials and any `git config --global` writes stay local.
 # Append the [include] if missing (creating the file if needed); appended last so

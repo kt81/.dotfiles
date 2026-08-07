@@ -10,8 +10,6 @@ map({ 'n', 'x' }, '<Up>', 'gk')
 -- Clear search highlight
 map('n', '<Esc>', '<cmd>nohlsearch<cr>')
 
--- Window navigation
-map('n', '<C-h>', '<C-w>h')
-map('n', '<C-j>', '<C-w>j')
-map('n', '<C-k>', '<C-w>k')
-map('n', '<C-l>', '<C-w>l')
+-- Window navigation lives with the vim-tmux-navigator spec in plugins/editor.lua:
+-- C-h/j/k/l has to fall through to the neighbouring tmux pane once there is no
+-- split left in that direction, which plain <C-w>h cannot do.
