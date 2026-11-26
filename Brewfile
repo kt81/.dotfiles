@@ -8,7 +8,7 @@
 brew "zsh"
 brew "tmux"
 brew "neovim"
-brew "tree-sitter" # CLI to build nvim-treesitter parsers (main branch needs it)
+brew "tree-sitter-cli" # `tree-sitter` CLI to build nvim-treesitter parsers (main branch needs it; the "tree-sitter" formula is only the library)
 brew "starship"   # cross-shell prompt (replaces powerlevel10k)
 brew "powershell" # pwsh — setup.sh needs it to run setup.core.ps1 (symlinks etc.)
 
