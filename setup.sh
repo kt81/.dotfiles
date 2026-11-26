@@ -64,11 +64,12 @@ esac
 
 if [[ $machine = Mac ]] ; then
 
-    # Homebrew
-    if ! cex brew ; then
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        export PATH="/opt/homebrew/bin:$PATH"
+    # Homebrew. On a fresh Mac install.sh has already installed it, but
+    # /opt/homebrew/bin isn't on PATH until a new shell, so test the path itself.
+    if [ ! -x /opt/homebrew/bin/brew ] ; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
+    export PATH="/opt/homebrew/bin:$PATH"
 
     # Homebrew packages (declarative — see Brewfile / Brewfile.local)
     brew bundle --file="${repoRoot}/Brewfile"
@@ -149,8 +150,14 @@ sudo chsh -s "$(which zsh)" "$USER"
 # lets the tarball pwsh run even when libicu is missing (e.g. system packages
 # were skipped) — safe here since this is a -NoProfile config run doing no
 # culture-sensitive work; interactive pwsh gets real ICU from libicu.
-pwshBin="$(command -v pwsh || "$HOME/.local/bin/mise" which pwsh 2>/dev/null)"
-[ -n "$pwshBin" ] && DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 "$pwshBin" -NoProfile "$repoRoot/setup.core.ps1"
+# `|| true`: without it a failed lookup makes the assignment fail and `set -e`
+# kills the script here without a word (the mise error goes to /dev/null).
+pwshBin="$(command -v pwsh || "$HOME/.local/bin/mise" which pwsh 2>/dev/null || true)"
+if [ -z "$pwshBin" ] ; then
+    echo "pwsh not found: cannot run setup.core.ps1 (config symlinks etc.)." >&2
+    exit 1
+fi
+DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 "$pwshBin" -NoProfile "$repoRoot/setup.core.ps1"
 
 # ----------------------------------
 # Common over *NIX Platforms

@@ -10,6 +10,14 @@ repo="https://github.com/kt81/.dotfiles.git"       # HTTPS: works before any SSH
 repoSsh="git@github.com:kt81/.dotfiles.git"         # switched to after clone (see below)
 dest="$HOME/.dotfiles"
 
+# macOS: until the Xcode Command Line Tools are installed, /usr/bin/git is a
+# stub that pops up the GUI installer and exits non-zero, so the clone below
+# would die. The Homebrew installer installs the CLT unattended (via
+# softwareupdate), and setup.sh needs Homebrew anyway, so install it first.
+if [[ "$(uname -s)" == Darwin ]] && ! xcode-select -p &>/dev/null ; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
 if ! command -v git &>/dev/null ; then
     echo "git is required to bootstrap the dotfiles. Please install git and retry." >&2
     exit 1

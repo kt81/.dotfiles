@@ -10,6 +10,7 @@ brew "tmux"
 brew "neovim"
 brew "tree-sitter" # CLI to build nvim-treesitter parsers (main branch needs it)
 brew "starship"   # cross-shell prompt (replaces powerlevel10k)
+brew "powershell" # pwsh — setup.sh needs it to run setup.core.ps1 (symlinks etc.)
 
 # --- modern CLI ---
 brew "ripgrep"    # rg  — grep
