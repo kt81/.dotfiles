@@ -30,15 +30,19 @@ function Test-Admin {
 
 # Install (or update) a PowerShell module, preferring the modern PSResourceGet
 # (bundled with pwsh 7.4+) and falling back to PowerShellGet v2.
+# Pin -Repository PSGallery: PSResourceGet 1.3+ seeds a new repository store
+# with MicrosoftArtifactRegistry ahead of PSGallery. MAR answers 404 for
+# gallery-only modules such as PSFzf, and $ErrorActionPreference = 'Stop'
+# turns that error into a fatal one.
 function Install-Module2 {
     param([Parameter(Mandatory)][string] $Name)
     if (Test-Cmd Install-PSResource) {
         if (Get-Module -ListAvailable $Name) {
             task "Updating module: $Name"
-            Update-PSResource -Name $Name -Scope CurrentUser -ErrorAction SilentlyContinue
+            Update-PSResource -Name $Name -Scope CurrentUser -Repository PSGallery -ErrorAction SilentlyContinue
         } else {
             task "Installing module: $Name"
-            Install-PSResource -Name $Name -Scope CurrentUser -TrustRepository
+            Install-PSResource -Name $Name -Scope CurrentUser -Repository PSGallery -TrustRepository
         }
     } else {
         if (Get-Module -ListAvailable $Name) {
